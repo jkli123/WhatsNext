@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class TaskChange {
+    private static final String TAG = "TaskChange";
+
     public static final String NAME = "NAME";
     public static final String CATEGORY = "CATEGORY";
     public static final String DESCRIPTION = "DESCRIPTION";

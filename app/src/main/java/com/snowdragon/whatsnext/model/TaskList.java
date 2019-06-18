@@ -7,18 +7,20 @@ import java.util.List;
 import java.util.UUID;
 
 public class TaskList {
-    public TaskList mTaskList;
+    private static final String TAG = "TaskList";
+
+    private static TaskList sTaskList;
     private List<Task> mTasks;
 
-    /*
-     *
-     *
-     */
-    public TaskList get() {
-        if (mTaskList == null) {
-            mTaskList = new TaskList();
+    private TaskList() {
+        mTasks = new ArrayList<>();
+    }
+
+    public static TaskList get() {
+        if (sTaskList == null) {
+            sTaskList = new TaskList();
         }
-        return mTaskList;
+        return sTaskList;
     }
 
 

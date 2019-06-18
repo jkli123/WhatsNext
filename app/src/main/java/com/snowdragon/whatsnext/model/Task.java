@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.UUID;
 
 public class Task {
+    private static final String TAG = "Task";
 
     public static final String WORK_CATEGORY = "WORK";
     public static final String STUDY_CATEGORY = "STUDY";
