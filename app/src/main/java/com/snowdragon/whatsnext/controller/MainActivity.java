@@ -1,5 +1,7 @@
 package com.snowdragon.whatsnext.controller;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.Nullable;
@@ -23,9 +25,31 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
+
+    /*
+     * Initialization of Main Activity by launching FragmentManager.
+     *
+     * <p>
+     *     After launching FragmentManager, MainFragment will be launched
+     *     by default. It displays a RecyclerView of all existing tasks
+     *     yet to be completed.
+     * </p>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = new MainFragment();
+//        Fragment fragment = new DetailFragment();
+        fm.beginTransaction()
+                .add(R.id.fragment_container, fragment)
+                .commit();
+
+
     }
 }
