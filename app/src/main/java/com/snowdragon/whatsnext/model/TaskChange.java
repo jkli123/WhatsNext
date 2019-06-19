@@ -1,5 +1,7 @@
 package com.snowdragon.whatsnext.model;
 
+import android.support.annotation.NonNull;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,7 +22,7 @@ public class TaskChange {
         this.mFieldValueHashMap = mFieldValueHashMap;
     }
 
-    public boolean updateTask(Task task) {
+    public boolean updateTask(@NonNull Task task) {
         String newName = (String) mFieldValueHashMap.get(NAME);
         if (newName != null) {
             task.setName(newName);
@@ -48,7 +50,7 @@ public class TaskChange {
         return true;
     }
 
-    public class Builder {
+    public static class Builder {
 
         private HashMap<String, Object> mFieldValueHashMap;
 

@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 
 import com.google.firebase.Timestamp;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -11,7 +12,14 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 
-public class Task {
+public class Task implements Serializable {
+
+    /*
+    Please remember to change this serial version UID if any substantial changes are
+    being made to this class, incrementing by 1 each time there are changes. This
+    is to prevent serialization of older Task objects.
+     */
+    private static final long serialVersionUID = 1L;
     private static final String TAG = "Task";
 
     public static final String WORK_CATEGORY = "WORK";

@@ -4,17 +4,23 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
 public class TaskList {
+
     private static final String TAG = "TaskList";
 
     private static List<Task> sTasks;
+    private static boolean sIsFirst = true;
 
     private TaskList() {
-        populate(15);
+        if(sIsFirst) {
+            sIsFirst = !sIsFirst;
+            populate(15);
+        }
     }
 
     public static TaskList get() {
@@ -33,6 +39,7 @@ public class TaskList {
         List<Task> newList = new ArrayList<>();
         newList.addAll(sTasks);
         Collections.sort(newList, taskComparator);
+        sTasks = newList;
         return newList;
     }
 
@@ -40,7 +47,10 @@ public class TaskList {
         sTasks.add(task);
     }
 
-    public Task read(String id) {
+    public Task read(String id) throws IllegalArgumentException {
+        if(id == null) {
+            throw new IllegalArgumentException("Task ID cannot be null");
+        }
         // Find Task by UUID
         Task target = null;
         for (Task task : sTasks) {
@@ -75,7 +85,8 @@ public class TaskList {
             task.setCategory(i % 2 == 0 ? Task.STUDY_CATEGORY : Task.WORK_CATEGORY);
             task.setDescription("Description " + i);
             task.setStatus(random.nextInt(4) +1);
-            task.setDeadline(Calendar.getInstance());
+            task.setDeadline(new Date());
+            task.setId(UUID.randomUUID().toString());
             add(task);
         }
     }

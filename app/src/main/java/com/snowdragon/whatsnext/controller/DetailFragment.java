@@ -29,7 +29,6 @@ public class DetailFragment extends Fragment {
 
     public static DetailFragment newInstance(Task task) {
 
-
         Bundle args = new Bundle();
         args.putSerializable(KEY, task);
         DetailFragment fragment = new DetailFragment();
@@ -42,6 +41,7 @@ public class DetailFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
+
         EditText taskName = view.findViewById(R.id.detail_name_edittext);
         EditText taskCategory = view.findViewById(R.id.detail_category_edittext);
         EditText taskDescription = view.findViewById(R.id.detail_description_edittext);
@@ -52,7 +52,7 @@ public class DetailFragment extends Fragment {
         taskName.setText(mTask.getName());
         taskCategory.setText(mTask.getCategory());
         taskDescription.setText(mTask.getDescription());
-        taskStatus.setText(statusArray[ mTask.getStatus() ]);
+        taskStatus.setText(statusArray[ mTask.getStatus() - 1 ]);
         taskDeadline.setText(DateFormat.format("dd/MM/yyyy",mTask.getDeadline().getTime()));
         return view;
     }

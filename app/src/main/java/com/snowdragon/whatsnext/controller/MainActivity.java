@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
 
-    /*
+    /**
      * Initialization of Main Activity by launching FragmentManager.
      *
      * <p>
