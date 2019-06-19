@@ -35,7 +35,7 @@ public class TaskList {
         mTasks.add(task);
     }
 
-    public Task read(UUID id) {
+    public Task read(String id) {
         // Find Task by UUID
         Task target = null;
         for (Task task : mTasks) {
@@ -47,7 +47,7 @@ public class TaskList {
         return target;
     }
 
-    public boolean update(UUID id, TaskChange taskChange) {
+    public boolean update(String id, TaskChange taskChange) {
         // Find Task by UUID
         Task target = read(id);
 
@@ -55,8 +55,8 @@ public class TaskList {
         return taskChange.updateTask(target);
     }
 
-    public Task remove(UUID id) {
-        // Find Task by UUID
+    public Task remove(String id) {
+         //Find Task by UUID
         Task target = read(id);
         mTasks.remove(target);
         return target;

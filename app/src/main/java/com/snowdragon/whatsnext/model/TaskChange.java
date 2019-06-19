@@ -1,6 +1,7 @@
 package com.snowdragon.whatsnext.model;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -35,7 +36,7 @@ public class TaskChange {
             task.setDescription(newDescription);
         }
 
-        Calendar newDeadline = (Calendar) mFieldValueHashMap.get(DEADLINE);
+        Date newDeadline = (Date) mFieldValueHashMap.get(DEADLINE);
         if (newDeadline != null) {
             task.setDeadline(newDeadline);
         }

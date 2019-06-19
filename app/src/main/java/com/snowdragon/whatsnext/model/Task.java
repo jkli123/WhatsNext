@@ -2,7 +2,13 @@ package com.snowdragon.whatsnext.model;
 
 import android.support.annotation.Nullable;
 
+import com.google.firebase.Timestamp;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.UUID;
 
 public class Task {
@@ -18,9 +24,9 @@ public class Task {
     private String mName;
     private String mCategory;
     private String mDescription;
-    private Calendar mDeadline;
+    private Date mDeadline;
     private int mStatus;
-    private UUID mId;
+    private String mId;
 
     public String getName() {
         return mName;
@@ -46,11 +52,11 @@ public class Task {
         mDescription = description;
     }
 
-    public Calendar getDeadline() {
+    public Date getDeadline() {
         return mDeadline;
     }
 
-    public void setDeadline(Calendar deadline) {
+    public void setDeadline(Date deadline) {
         mDeadline = deadline;
     }
 
@@ -62,15 +68,24 @@ public class Task {
         mStatus = status;
     }
 
-    public UUID getId() {
+    public String getId() {
         return mId;
     }
 
-    public void setId(@Nullable UUID id) {
+    public void setId(@Nullable String id) {
         if (id == null) {
-            mId = UUID.randomUUID();
+            mId = UUID.randomUUID().toString();
         } else {
             mId = id;
         }
+    }
+
+    public String toString() {
+        return "[Name: " + mName +
+                ", Category: " + mCategory +
+                ", Description: " + mDescription +
+                ", Status: " + mStatus +
+                ", Deadline: " + mDeadline +
+                ", UUID: " + mId + "]";
     }
 }
