@@ -17,25 +17,26 @@ public class Auth {
     public static final int FACEBOOK_PROVIDER = 3;
     public static final int TWITTER_PROVIDER = 4;
 
-    private static FirebaseAuth sFirebaseAuth;
+    private FirebaseAuth mFirebaseAuth;
 
-    private Auth() {
-
+    private Auth(FirebaseAuth auth) {
+        mFirebaseAuth = auth;
     }
 
     public static Auth getInstance() {
-        if(sFirebaseAuth == null) {
-            sFirebaseAuth = FirebaseAuth.getInstance();
-        }
-        return new Auth();
+        return new Auth(FirebaseAuth.getInstance());
     }
 
     public boolean isCurrentUserSignedIn() {
-        return sFirebaseAuth.getCurrentUser() != null;
+        return mFirebaseAuth.getCurrentUser() != null;
     }
 
     public FirebaseUser getCurrentUser() {
-        return sFirebaseAuth.getCurrentUser();
+        return mFirebaseAuth.getCurrentUser();
+    }
+
+    public void signOutCurrentUser() {
+        mFirebaseAuth.signOut();
     }
 
     public static Intent getAuthSignInIntent(int... authProviders) {
@@ -72,4 +73,5 @@ public class Auth {
         }
         return providers;
     }
+
 }
