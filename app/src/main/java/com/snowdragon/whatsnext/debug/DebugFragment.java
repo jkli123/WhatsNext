@@ -3,32 +3,37 @@ package com.snowdragon.whatsnext.debug;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.google.firebase.auth.FirebaseUser;
 import com.snowdragon.whatsnext.controller.R;
 import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.database.Database;
 import com.snowdragon.whatsnext.model.Task;
+import com.snowdragon.whatsnext.model.TaskChange;
 
 import java.util.Date;
-import java.util.List;
 
 public class DebugFragment extends Fragment {
 
     private static final String TAG = "DebugFragment";
     private static final int SIGN_IN = 1;
 
-    private Database mDb = Database.getInstance();
-    private Auth mAuth = Auth.getInstance();
+    //static valid uuid that never changes for testing purposes.
+    private static final String VALID_UUID = "9095b520-2185-4cca-a26d-5cdc566ce867";
+
+    private Database mDb;
+    private final Auth mAuth = Auth.getInstance();
     private OnSignInCompleteListener mSignInCompleteListener;
+    private Database.OnDatabaseStateChangeListener mListener;
 
     private TextView mDebugText;
 
@@ -41,6 +46,9 @@ public class DebugFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_debug, container, false);
         mDebugText = v.findViewById(R.id.debug_textview);
+        mDebugText.setAllCaps(true);
+        mDb = Database.getInstance(getActivity());
+        mListener = new DebugDatabaseListener();
         //Begin debug test mode.
         initDebugMode();
         return v;
@@ -51,12 +59,12 @@ public class DebugFragment extends Fragment {
         //For sign in of dev user.
         if(requestCode == SIGN_IN) {
             if(resultCode == Activity.RESULT_OK) {
-                Log.i(TAG, "Successful sign in");
+                Log.d(TAG, "Successful sign in");
                 mSignInCompleteListener.onSignIn(mAuth.getCurrentUser());
                 return;
             }
         }
-        Log.i(TAG, "Sign in failed");
+        Log.d(TAG, "Sign in failed");
     }
 
     private void initDebugMode() {
@@ -67,21 +75,33 @@ public class DebugFragment extends Fragment {
                 //Put code you wish to test here with current user.
 //                addTaskWithDebugTaskAndUserAddsSuccessfullyToDatabase(user);
 //                getAllTaskForUserReturnsAllTasksInDatabase(user);
-                signUserOutSuccessfullySignsUserOutOfDatabase();
+//                updateDummyTaskWithNewNameSuccessfullyUpdatesDatabase();
+//                deleteDummyTaskForUserSuccessfullyDeletesTask();
             }
         });
+        mDb.setOnDatabaseStateChangeListener(mListener);
         signUserIn();
+    }
+
+    private void updateDummyTaskWithNewNameSuccessfullyUpdatesDatabase() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        TaskChange change = new TaskChange.Builder()
+                .add(TaskChange.DEADLINE, new Date())
+                .build();
+        mDb
+                .updateTaskForUser(user, VALID_UUID, change);
+    }
+
+    private void deleteDummyTaskForUserSuccessfullyDeletesTask() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        Task task = getDebugTask();
+        mDb.deleteTaskForUser(user, task);
     }
 
     private void signUserOutSuccessfullySignsUserOutOfDatabase() {
         FirebaseUser user = mAuth.getCurrentUser();
         mAuth.signOutCurrentUser();
         Log.i(TAG, "User has been signed out");
-        //Should throw a PERMISSION DENIED exception
-//        getAllTaskForUserReturnsAllTasksInDatabase(user);
-        //For some reason writing to database does not throw exception.
-        //But it still does not write to the database
-//        addTaskWithDebugTaskAndUserAddsSuccessfullyToDatabase(user);
     }
 
     private void addTaskWithDebugTaskAndUserAddsSuccessfullyToDatabase(
@@ -91,16 +111,7 @@ public class DebugFragment extends Fragment {
     }
 
     private void getAllTaskForUserReturnsAllTasksInDatabase(final FirebaseUser user) {
-        mDb.getAllTaskForUser(user).setOnGetAllTasksCompleteListener(new Database.OnGetAllTasksCompleteListener() {
-            @Override
-            public void allTasks(List<Task> tasks) {
-                Log.i(TAG,
-                        "User: "
-                                + user.getDisplayName()
-                                + ", has tasks: "
-                                + tasks.toString());
-            }
-        });
+        mDb.getAllTaskForUser(user);
     }
 
     private void signUserIn() {
@@ -126,7 +137,7 @@ public class DebugFragment extends Fragment {
         task.setDescription("This is a debug description");
         task.setDeadline(new Date());
         task.setStatus(Task.ON_HOLD);
-        task.setId(null);
+        task.setId(VALID_UUID);
         task.setCategory(Task.STUDY_CATEGORY);
         return task;
     }

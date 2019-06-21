@@ -6,13 +6,13 @@ import java.util.Date;
 
 import static org.junit.Assert.*;
 
-public class TaskChangeTest {
+public class TaskDatabaseChangeTest {
 
-    private String dummyName = "dummyName";
-    private String dummyCat = "dummyCat";
-    private String dummyDesc = "dummyDesc";
-    private Date dummyDeadline = new Date();
-    private int dummyStatus = Task.COMPLETED;
+    private final String dummyName = "dummyName";
+    private final String dummyCat = "dummyCat";
+    private final String dummyDesc = "dummyDesc";
+    private final Date dummyDeadline = new Date();
+    private final int dummyStatus = Task.COMPLETED;
 
     @Test
     public void updateTaskWithAllParemetersReturnsCorrectlyUpdatedInfo() {

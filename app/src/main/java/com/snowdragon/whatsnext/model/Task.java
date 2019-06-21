@@ -1,15 +1,9 @@
 package com.snowdragon.whatsnext.model;
 
-import android.support.annotation.Nullable;
-
-import com.google.firebase.Timestamp;
+import androidx.annotation.Nullable;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.UUID;
 
 public class Task implements Serializable {

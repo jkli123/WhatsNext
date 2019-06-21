@@ -1,8 +1,6 @@
 package com.snowdragon.whatsnext.model;
 
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -12,8 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mockingDetails;
-import static org.mockito.Mockito.when;
 
 public class TaskListTest {
 
@@ -32,6 +28,7 @@ public class TaskListTest {
         assertSame(TaskList.get().getTasks(), TaskList.get().getTasks());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void sortWithIdComparatorReturnsListOfTaskAccordingToId() {
         Comparator<Task> dummyComparator =

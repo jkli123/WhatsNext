@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">WhatsNext</string>
     <string name="debug_text">This is a debug page. If you see this page, while developing, welcome to debug. If you see this page as a user, please report to your nearest friendly snow dragon support team</string>
+    <string name="database_update_message">Update of task with id: %1$s, completed successfully</string>
+    <string name="database_add_message">Task with id: %1$s, added to database successfully</string>
+    <string name="database_delete_message">Task with id: %1$s, deleted from database successfully</string>
+    <string name="database_get_message">Retrieval of all tasks from database completed successfully: List: %1$s</string>
+    <string name="database_general_message">%1$s</string>
 </resources>

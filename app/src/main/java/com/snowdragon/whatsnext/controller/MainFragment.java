@@ -1,17 +1,17 @@
 package com.snowdragon.whatsnext.controller;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.snowdragon.whatsnext.model.Task;
 import com.snowdragon.whatsnext.model.TaskList;
@@ -41,8 +41,8 @@ public class MainFragment extends Fragment {
     private class TaskHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
 
-        private TextView mTaskName;
-        private TextView mTaskDeadline;
+        private final TextView mTaskName;
+        private final TextView mTaskDeadline;
         private Task mTask;
 
         public TaskHolder(LayoutInflater inflater, ViewGroup parent) {
@@ -80,7 +80,7 @@ public class MainFragment extends Fragment {
 
     private class TaskAdaptor extends RecyclerView.Adapter<TaskHolder> {
 
-        private List<Task> mTasks;
+        private final List<Task> mTasks;
 
         public TaskAdaptor(List<Task> tasks) {
             mTasks = tasks;

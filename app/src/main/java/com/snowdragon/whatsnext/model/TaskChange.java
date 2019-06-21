@@ -1,25 +1,28 @@
 package com.snowdragon.whatsnext.model;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 
 public class TaskChange {
     private static final String TAG = "TaskChange";
 
-    public static final String NAME = "NAME";
-    public static final String CATEGORY = "CATEGORY";
-    public static final String DESCRIPTION = "DESCRIPTION";
-    public static final String DEADLINE = "DEADLINE";
-    public static final String STATUS = "STATUS";
+    public static final String NAME = "name";
+    public static final String CATEGORY = "category";
+    public static final String DESCRIPTION = "description";
+    public static final String DEADLINE = "deadline";
+    public static final String STATUS = "status";
 
-    private HashMap<String, Object> mFieldValueHashMap;
+    private final HashMap<String, Object> mFieldValueHashMap;
 
     private TaskChange(HashMap<String, Object> mFieldValueHashMap) {
         this.mFieldValueHashMap = mFieldValueHashMap;
+    }
+
+    public Map<String, Object> getFieldValueMap() {
+        return mFieldValueHashMap;
     }
 
     public boolean updateTask(@NonNull Task task) {
@@ -52,7 +55,7 @@ public class TaskChange {
 
     public static class Builder {
 
-        private HashMap<String, Object> mFieldValueHashMap;
+        private final HashMap<String, Object> mFieldValueHashMap;
 
         public Builder() {
             mFieldValueHashMap = new HashMap<>();

@@ -8,8 +8,8 @@ import static org.junit.Assert.*;
 
 public class TaskTest {
 
-    private Task mTaskTest = new Task();
-    private UUID mIdDummy = UUID.randomUUID();
+    private final Task mTaskTest = new Task();
+    private final UUID mIdDummy = UUID.randomUUID();
 
     @Test
     public void setIdRandomUuidStringReturnsSameUuidString() {
