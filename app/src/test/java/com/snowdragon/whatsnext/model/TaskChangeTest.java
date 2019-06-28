@@ -6,7 +6,7 @@ import java.util.Date;
 
 import static org.junit.Assert.*;
 
-public class TaskDatabaseChangeTest {
+public class TaskChangeTest {
 
     private final String dummyName = "dummyName";
     private final String dummyCat = "dummyCat";

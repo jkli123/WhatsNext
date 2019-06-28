@@ -3,7 +3,9 @@ package com.snowdragon.whatsnext.model;
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class Task implements Serializable {
@@ -18,10 +20,11 @@ public class Task implements Serializable {
 
     public static final String WORK_CATEGORY = "WORK";
     public static final String STUDY_CATEGORY = "STUDY";
-    public static final int COMPLETED = 1;
-    public static final int IN_PROGRESS = 2;
-    public static final int ON_HOLD = 3;
-    public static final int UNDONE = 4;
+    public static final int COMPLETED = 0;
+    public static final int IN_PROGRESS = 1;
+    public static final int ON_HOLD = 2;
+    public static final int UNDONE = 3;
+    public static List<String> sStatusList = Arrays.asList("COMPLETED", "IN PROGRESS", "ON HOLD", "UNDONE");
 
     private String mName;
     private String mCategory;
@@ -29,6 +32,23 @@ public class Task implements Serializable {
     private Date mDeadline;
     private int mStatus;
     private String mId;
+
+    /*
+     * Converts the String representation of Status (as in sStatusList) to its respective integer
+     * representation
+     */
+    public static int getStatusIndexFromString(String status) {
+        return sStatusList.indexOf(status);
+    }
+
+    /*
+     * Converts the integer representation of a status (as specified above in the static fields)
+     * to its respective String representation in sStatusList that will be used for display in the
+     * UI's TextView and EditText
+     */
+    public static String getStatusStringFromIndex(int idx) {
+        return sStatusList.get(idx);
+    }
 
     public String getName() {
         return mName;

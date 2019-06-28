@@ -87,7 +87,7 @@ public class Auth {
                 .getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
-                .setIsSmartLockEnabled(false)
+                .setIsSmartLockEnabled(true)
                 .build();
     }
 

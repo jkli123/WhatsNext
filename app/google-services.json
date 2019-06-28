@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "349769723449-u5i8op0fofd2d2i7g7u4kepgfe270f96.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.snowdragon.whatsnext.controller",
+            "certificate_hash": "94bab47f1e00bd679cafe6efe2570e1be0d399f1"
+          }
+        },
+        {
           "client_id": "349769723449-r10hos2jsafu4bdmn4g4hhbjfc540q7i.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

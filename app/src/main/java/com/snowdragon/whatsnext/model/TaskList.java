@@ -18,7 +18,7 @@ public class TaskList {
     private TaskList() {
         if(sIsFirst) {
             sIsFirst = !sIsFirst;
-            populate(15);
+            populate(3);
         }
     }
 
@@ -33,7 +33,7 @@ public class TaskList {
         return sTasks;
     }
 
-
+    // TODO: App to retain the previous sorting order when launched again after onDestroy()
     public List<Task> sort(Comparator<Task> taskComparator) {
         List<Task> newList = new ArrayList<>();
         newList.addAll(sTasks);
@@ -83,10 +83,13 @@ public class TaskList {
             task.setName("Task " + i);
             task.setCategory(i % 2 == 0 ? Task.STUDY_CATEGORY : Task.WORK_CATEGORY);
             task.setDescription("Description " + i);
-            task.setStatus(random.nextInt(4) +1);
+            task.setStatus(random.nextInt(4));
             task.setDeadline(new Date());
             task.setId(UUID.randomUUID().toString());
             add(task);
         }
     }
+
+    // TODO: generateTaskComparator(String field)
+    // where field = "Name", "Category", "Deadline" or "Status"
 }

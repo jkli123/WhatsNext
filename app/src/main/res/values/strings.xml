@@ -6,4 +6,10 @@
     <string name="database_delete_message">Task with id: %1$s, deleted from database successfully</string>
     <string name="database_get_message">Retrieval of all tasks from database completed successfully: List: %1$s</string>
     <string name="database_general_message">%1$s</string>
+    <string name="addition_deadline_message">Complete by </string>
+    <string name="addition_status_button_message">"Completed"</string>
+    <string name="addition_add_button_message">"Add Task"</string>
+    <string name="menu_new_task_item_title">New task</string>
+    <string name="detail_status_button_message">UNDONE</string>
+    <string name="detail_save_change_button_message">Save changes</string>
 </resources>

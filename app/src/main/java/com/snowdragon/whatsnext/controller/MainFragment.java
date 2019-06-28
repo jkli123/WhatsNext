@@ -3,6 +3,9 @@ package com.snowdragon.whatsnext.controller;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -24,6 +27,41 @@ public class MainFragment extends Fragment {
     private RecyclerView mTaskRecyclerView;
     private TaskAdaptor mTaskAdaptor;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    /*
+     * This method allows you to make specific changes to menu item properties. For example, you
+     * may wish to set the visibility of particular menu items to false
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_main, menu);
+//        menu.getItem(0).setVisible(false);
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_new_task_item:
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, AdditionFragment.newInstance())
+                        .addToBackStack(null)
+                        .commit();
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
     /*
      * Inflation of MainFragment.
      */
@@ -34,7 +72,33 @@ public class MainFragment extends Fragment {
         mTaskRecyclerView = view.findViewById(R.id.task_recycler_view);
         mTaskRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        // TODO: implement loading of information to and from database
         mTaskRecyclerView.setAdapter(new TaskAdaptor(TaskList.get().getTasks()));
+//
+//        Database.getInstance(getActivity())
+//                .addTaskForUser(Auth.getInstance().getCurrentUser(), TaskList.get().getTasks().get(0))
+//                .setOnDatabaseStateChangeListener(new Database.OnDatabaseStateChangeListener() {
+//                    @Override
+//                    public void onAdd(Task task) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onUpdate(String taskId) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onDelete(Task task) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onGet(List<Task> task) {
+//
+//                    }
+//                });
+
         return view;
     }
 
@@ -63,7 +127,7 @@ public class MainFragment extends Fragment {
          * Overriding the the onClick method for the ViewHolder.
          *
          * <p>
-         * Program the onCLick to replace the MainFragment with the DetailFragment
+         * onClick replaces the MainFragment with the DetailFragment
          * of the selected Task.
          * </p>
          */
@@ -72,10 +136,12 @@ public class MainFragment extends Fragment {
             DetailFragment detailFragment = DetailFragment.newInstance(mTask);
             getActivity().getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, detailFragment, "TaskDetailFragment")
+                    .replace(R.id.fragment_container, detailFragment, "DetailFragment")
                     .addToBackStack(null)
                     .commit();
         }
+
+
     }
 
     private class TaskAdaptor extends RecyclerView.Adapter<TaskHolder> {

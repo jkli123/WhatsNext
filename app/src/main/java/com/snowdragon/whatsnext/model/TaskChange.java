@@ -61,13 +61,37 @@ public class TaskChange {
             mFieldValueHashMap = new HashMap<>();
         }
 
-        public Builder add(String field, Object value) {
-            mFieldValueHashMap.put(field, value);
+        public Builder updateName(String newName) {
+            mFieldValueHashMap.put(NAME, newName);
+            return this;
+        }
+
+        public Builder updateCategory(String newCategory) {
+            mFieldValueHashMap.put(CATEGORY, newCategory);
+            return this;
+        }
+
+        public Builder updateDescription(String newDescription) {
+            mFieldValueHashMap.put(DESCRIPTION, newDescription);
+            return this;
+        }
+
+        public Builder updateStatus(int newStatus) {
+            mFieldValueHashMap.put(STATUS, newStatus);
+            return this;
+        }
+
+        public Builder updateDeadline(Date newDeadline) {
+            mFieldValueHashMap.put(DEADLINE, newDeadline);
             return this;
         }
 
         public TaskChange build() {
             return new TaskChange(mFieldValueHashMap);
         }
+
+
     }
+
+
 }

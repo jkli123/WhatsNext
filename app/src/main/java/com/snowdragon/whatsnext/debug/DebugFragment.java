@@ -86,10 +86,41 @@ public class DebugFragment extends Fragment {
     private void updateDummyTaskWithNewNameSuccessfullyUpdatesDatabase() {
         FirebaseUser user = mAuth.getCurrentUser();
         TaskChange change = new TaskChange.Builder()
-                .add(TaskChange.DEADLINE, new Date())
+                .updateName("NewDummyName")
                 .build();
-        mDb
-                .updateTaskForUser(user, VALID_UUID, change);
+        mDb.updateTaskForUser(user, VALID_UUID, change);
+    }
+
+    private void updateDummyTaskWithNewCategorySuccessfullyUpdatesDatabase() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        TaskChange change = new TaskChange.Builder()
+                .updateCategory("NewDummyCategory")
+                .build();
+        mDb.updateTaskForUser(user, VALID_UUID, change);
+    }
+
+    private void updateDummyTaskWithNewDescriptionSuccessfullyUpdatesDatabase() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        TaskChange change = new TaskChange.Builder()
+                .updateDescription("NewDummyDescription")
+                .build();
+        mDb.updateTaskForUser(user, VALID_UUID, change);
+    }
+
+    private void updateDummyTaskWithNewStatusSuccessfullyUpdatesDatabase() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        TaskChange change = new TaskChange.Builder()
+                .updateStatus(0)
+                .build();
+        mDb.updateTaskForUser(user, VALID_UUID, change);
+    }
+
+    private void updateDummyTaskWithNewDeadlineSuccessfullyUpdatesDatabase() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        TaskChange change = new TaskChange.Builder()
+                .updateDeadline(new Date())
+                .build();
+        mDb.updateTaskForUser(user, VALID_UUID, change);
     }
 
     private void deleteDummyTaskForUserSuccessfullyDeletesTask() {

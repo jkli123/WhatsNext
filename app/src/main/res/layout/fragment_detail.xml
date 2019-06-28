@@ -7,6 +7,8 @@
     android:layout_height="match_parent"
     android:textAlignment="gravity">
 
+
+
     <EditText
         android:id="@+id/detail_name_edittext"
         android:layout_width="240dp"
@@ -57,7 +59,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:text="UNDONE"
+        android:text="@string/detail_status_button_message"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/detail_name_edittext"
@@ -79,5 +81,19 @@
         app:layout_constraintStart_toEndOf="@id/detail_category_edittext"
         app:layout_constraintTop_toBottomOf="@id/detail_status_button" />
 
+    <Button
+        android:id="@+id/detail_save_change_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/detail_save_change_button_message"
+        android:textAllCaps="false"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.474"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,11 +7,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.debug.DebugFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final int SIGN_IN_INTENT = 0;
 
     /*
      * Set this to false if you wish to test for UI elements in app.
@@ -20,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
      * it impossible to write unit tests for the database as it
      * requires the different runtime resources provided by android SDK.
      */
-    private static final boolean isDebugRun = true;
+    private static final boolean isDebugRun = false;
 
     /**
      * Initialization of Main Activity by launching FragmentManager.
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         if(isDebugRun) {
             Log.i(TAG, "Running debug run of app");
             FragmentManager fm = getSupportFragmentManager();
@@ -44,12 +47,27 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         } else {
             Log.i(TAG, "Running actual app instance");
+
+            // Launch Authentication page first
+            startActivityForResult(Auth.getAuthSignInIntent(
+                    Auth.EMAIL_PROVIDER,
+                    Auth.GOOGLE_PROVIDER),SIGN_IN_INTENT);
+
+
             FragmentManager fm = getSupportFragmentManager();
+//            Fragment fragment = new AdditionFragment();
             Fragment fragment = new MainFragment();
-//        Fragment fragment = new DetailFragment();
+//            Fragment fragment = new DetailFragment();
             fm.beginTransaction()
                     .add(R.id.fragment_container, fragment)
                     .commit();
         }
     }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.menu_main, menu);
+//        return true;
+//    }
 }
