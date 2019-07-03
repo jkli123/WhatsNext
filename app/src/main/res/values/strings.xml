@@ -10,6 +10,10 @@
     <string name="addition_status_button_message">"Completed"</string>
     <string name="addition_add_button_message">"Add Task"</string>
     <string name="menu_new_task_item_title">New task</string>
-    <string name="detail_status_button_message">UNDONE</string>
-    <string name="detail_save_change_button_message">Save changes</string>
+    <string name="detail_status_button_message">IN PROGRESS</string>
+    <string name="detail_update_button_message">Update</string>
+    <string name="detail_delete_button_message">Delete</string>
+    <string name="detail_description_edittext_message">Add description</string>
+    <string name="detail_category_edittext_message">Add category</string>
+    <string name="detail_name_edittext_message">Name of task</string>
 </resources>

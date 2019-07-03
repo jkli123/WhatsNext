@@ -15,10 +15,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.snowdragon.whatsnext.database.Auth;
+import com.snowdragon.whatsnext.database.Database;
 import com.snowdragon.whatsnext.model.Task;
 import com.snowdragon.whatsnext.model.TaskList;
 
 import java.util.Calendar;
+import java.util.UUID;
 
 public class AdditionFragment extends Fragment {
     private static final String TAG = "AdditionFragment";
@@ -34,7 +37,6 @@ public class AdditionFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(false);
     }
 
     @Nullable
@@ -64,8 +66,7 @@ public class AdditionFragment extends Fragment {
             }
         });
 
-        // Initializing the selectedDate for this Task as the current date and getting
-        // taskDeadline TextView to show this current date as the default date
+        // Initializing the default deadline on the Deadline TextView as the current date
         final Calendar taskDeadlineValue = Calendar.getInstance();
         taskDeadline.setText(DateFormat.format("dd/MM/yyyy", taskDeadlineValue.getTime()));
 
@@ -101,12 +102,18 @@ public class AdditionFragment extends Fragment {
                 task.setDescription(taskDescription.getText().toString());
                 task.setDeadline(taskDeadlineValue.getTime());
                 task.setStatus(Task.UNDONE);
+                task.setId(UUID.randomUUID().toString());
 
                 TaskList.get().add(task);
-                MainFragment MainFragment = new MainFragment();
+                Database.getInstance(getActivity())
+                        .addTaskForUser(Auth.getInstance().getCurrentUser(), task);
+
+                // Return to MainFragment
+                getActivity().getSupportFragmentManager()
+                        .popBackStack();
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment_container, MainFragment, "MainFragment")
+                        .replace(R.id.fragment_container, new MainFragment(), "MainFragment")
                         .addToBackStack(null)
                         .commit();
             }
@@ -114,6 +121,10 @@ public class AdditionFragment extends Fragment {
 
         return view;
     }
+
+    /* TODO: Update the status button into some kind of drop down selection or image selector to
+     * select among 4 status (Might want to refactor your status names to something more natural)
+     */
 
     /*
      * Used in the taskStatus button click listener to toggle between the different statuses on click

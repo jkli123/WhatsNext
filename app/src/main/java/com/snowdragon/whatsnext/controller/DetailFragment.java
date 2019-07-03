@@ -17,8 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseUser;
+import com.snowdragon.whatsnext.database.Auth;
+import com.snowdragon.whatsnext.database.Database;
 import com.snowdragon.whatsnext.model.Task;
 import com.snowdragon.whatsnext.model.TaskChange;
+import com.snowdragon.whatsnext.model.TaskList;
 
 import java.util.Calendar;
 
@@ -27,12 +31,13 @@ public class DetailFragment extends Fragment {
     private static final String KEY = "TASK";
     private static final String TAG = "DetailFragment";
 
-
     private Task mTask;
+    private FirebaseUser mFirebaseUser = Auth.getInstance().getCurrentUser();
     private final Calendar mTaskDeadlineValue = Calendar.getInstance();;
     private TaskChange.Builder mTaskChangeBuilder;
     private int mStatusIdx;
-    private Button mSaveChange;
+    private Button mUpdateButton;
+    private Database mDatabase = Database.getInstance(getActivity());
 
 
     public static DetailFragment newInstance(Task task) {
@@ -58,7 +63,8 @@ public class DetailFragment extends Fragment {
         final EditText taskDescription = view.findViewById(R.id.detail_description_edittext);
         final Button taskStatus = view.findViewById(R.id.detail_status_button);
         final TextView taskDeadline = view.findViewById(R.id.detail_deadline_textview);
-        mSaveChange = view.findViewById(R.id.detail_save_change_button);
+        mUpdateButton = view.findViewById(R.id.detail_update_button);
+        final Button deleteButton = view.findViewById(R.id.detail_delete_button);
 
         // Retrieving Task fields content for display
         mTask = (Task) getArguments().getSerializable(KEY);
@@ -118,22 +124,42 @@ public class DetailFragment extends Fragment {
         taskStatus.addTextChangedListener(
                 new ViewTextWatcher(TaskChange.STATUS));
 
-        // Adding the ClickListener to the "Save changes" Button
-        mSaveChange.setOnClickListener(new View.OnClickListener() {
+        // Adding the ClickListener to the "Update" Button
+        mUpdateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TaskChange taskChange = mTaskChangeBuilder.build();
-                taskChange.updateTask(mTask);
-
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container, new MainFragment(), "MainFragment")
-                        .addToBackStack(null)
-                        .commit();
+                TaskList.get().update(mTask.getId(), taskChange);
+                mDatabase.updateTaskForUser(mFirebaseUser, mTask.getId(), taskChange);
+                returnToMainFragment();
             }
         });
-        mSaveChange.setEnabled(false);
+        mUpdateButton.setEnabled(false);
+
+        // Adding the ClickListener to the "Delete" Button
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TaskList.get().delete(mTask.getId());
+                mDatabase.deleteTaskForUser(mFirebaseUser, mTask);
+                returnToMainFragment();
+            }
+        });
+
         return view;
+    }
+
+    /*
+     * Replaces the current AdditionFragment with the MainFragment.
+     */
+    private void returnToMainFragment() {
+        getActivity().getSupportFragmentManager()
+                .popBackStack();
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new MainFragment(), "MainFragment")
+                .addToBackStack(null)
+                .commit();
     }
 
 
@@ -162,7 +188,7 @@ public class DetailFragment extends Fragment {
 
         @Override
         public void afterTextChanged(Editable s) {
-            mSaveChange.setEnabled(true);
+            mUpdateButton.setEnabled(true);
             String updatedValue = s.toString();
             switch (mField) {
                 case TaskChange.NAME:
@@ -190,7 +216,5 @@ public class DetailFragment extends Fragment {
         }
 
     }
-
-    // TODO: Create a "Undo changes" button when content is changed
 
 }

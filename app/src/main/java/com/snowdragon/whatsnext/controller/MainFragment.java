@@ -1,5 +1,6 @@
 package com.snowdragon.whatsnext.controller;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -16,6 +17,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseUser;
+import com.snowdragon.whatsnext.database.Auth;
+import com.snowdragon.whatsnext.database.Database;
 import com.snowdragon.whatsnext.model.Task;
 import com.snowdragon.whatsnext.model.TaskList;
 
@@ -24,8 +28,11 @@ import java.util.List;
 public class MainFragment extends Fragment {
 
     private static final String TAG = "MainFragment";
+    private static final int SIGN_IN_INTENT = 0;
     private RecyclerView mTaskRecyclerView;
     private TaskAdaptor mTaskAdaptor;
+    private MainActivity mMainActivity;
+    private static FirebaseUser sFirebaseUser;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,25 +48,31 @@ public class MainFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu_main, menu);
-//        menu.getItem(0).setVisible(false);
     }
 
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.menu_new_task_item:
+        switch (item.getItemId()) {
+            case R.id.menu_add_task_item:
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, AdditionFragment.newInstance())
                         .addToBackStack(null)
                         .commit();
+                break;
 
-            default:
-                return super.onOptionsItemSelected(item);
+            // TODO: Drawer on Appbar to provide sign-out option
+            case R.id.menu_sign_out_item:
+                Auth.getInstance().signOutCurrentUser();
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .remove(this)
+                        .commit();
+                break;
         }
-
+        return super.onOptionsItemSelected(item);
     }
 
     /*
@@ -71,35 +84,52 @@ public class MainFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         mTaskRecyclerView = view.findViewById(R.id.task_recycler_view);
         mTaskRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        mTaskAdaptor = new TaskAdaptor(TaskList.get().getTasks());
 
-        // TODO: implement loading of information to and from database
-        mTaskRecyclerView.setAdapter(new TaskAdaptor(TaskList.get().getTasks()));
-//
-//        Database.getInstance(getActivity())
-//                .addTaskForUser(Auth.getInstance().getCurrentUser(), TaskList.get().getTasks().get(0))
-//                .setOnDatabaseStateChangeListener(new Database.OnDatabaseStateChangeListener() {
-//                    @Override
-//                    public void onAdd(Task task) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onUpdate(String taskId) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onDelete(Task task) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onGet(List<Task> task) {
-//
-//                    }
-//                });
+        Database.OnDatabaseStateChangeListener databaseStateChangeListener =
+                new Database.OnDatabaseStateChangeListener() {
+                    @Override
+                    public void onAdd(Task task) { }
+
+                    @Override
+                    public void onUpdate(String taskId) { }
+
+                    @Override
+                    public void onDelete(Task task) { }
+
+                    @Override
+                    public void onGet(List<Task> task) {
+                        TaskList.get().setTasks(task);
+                        // This line is necessary to update Adaptor data on first authentication
+                        mTaskRecyclerView.setAdapter(new TaskAdaptor(TaskList.get().getTasks()));
+                    }
+                };
+
+        if (sFirebaseUser == null) {
+            sFirebaseUser = Auth.getInstance().getCurrentUser();
+            Database.getInstance(getActivity())
+                    .setOnDatabaseStateChangeListener(databaseStateChangeListener)
+                    .getAllTaskForUser(sFirebaseUser);
+        } else {
+            mTaskRecyclerView.setAdapter(new TaskAdaptor(TaskList.get().getTasks()));
+            // mTaskAdaptor = new TaskAdaptor(TaskList.get().getTasks());
+            // Not used because it changes the order of the items
+        }
+
 
         return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mMainActivity = (MainActivity) context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mMainActivity.runSignInFlow();
     }
 
     private class TaskHolder extends RecyclerView.ViewHolder
@@ -119,16 +149,18 @@ public class MainFragment extends Fragment {
         public void bind(Task task) {
             mTask = task;
             mTaskName.setText(task.getName());
-//            mTaskDeadline.setText(task.getDeadline().toString());
             mTaskDeadline.setText(DateFormat.format("dd/MM/yyyy",task.getDeadline().getTime()));
+            if (task.isOverdue()) {
+                mTaskDeadline.setTextColor(getResources().getColor(R.color.colorOverdue));
+            }
         }
 
         /*
          * Overriding the the onClick method for the ViewHolder.
          *
          * <p>
-         * onClick replaces the MainFragment with the DetailFragment
-         * of the selected Task.
+         *     Replaces the MainFragment with the DetailFragment
+         *     of the selected Task.
          * </p>
          */
         @Override
@@ -140,8 +172,6 @@ public class MainFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         }
-
-
     }
 
     private class TaskAdaptor extends RecyclerView.Adapter<TaskHolder> {

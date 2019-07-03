@@ -85,7 +85,7 @@ public class TaskListTest {
         Task task = newTask();
         String idDummy = task.getId();
         TaskList.get().add(task);
-        Task removed = TaskList.get().remove(idDummy);
+        Task removed = TaskList.get().delete(idDummy);
         assertEquals(task, removed);
         assertEquals(initial, TaskList.get().getTasks());
     }
@@ -94,7 +94,7 @@ public class TaskListTest {
     public void updateWithNewNameShouldUpdateTaskInTasklist() {
         TaskChange change =
                 new TaskChange.Builder()
-                        .add(TaskChange.NAME, "Othername")
+                        .updateName("Othername")
                         .build();
         Task task = newTask();
         String idDummy = task.getId();

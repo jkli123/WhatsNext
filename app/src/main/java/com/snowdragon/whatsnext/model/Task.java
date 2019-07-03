@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -100,6 +101,18 @@ public class Task implements Serializable {
         } else {
             mId = id;
         }
+    }
+
+    public boolean isOverdue() {
+        Calendar d = Calendar.getInstance();
+        d.setTime(mDeadline);
+        d.set(d.get(Calendar.YEAR),
+                d.get(Calendar.MONTH),
+                d.get(Calendar.DAY_OF_MONTH),
+                0, 0, 0);
+        d.add(Calendar.DAY_OF_MONTH, 1);
+        Calendar today = Calendar.getInstance();
+        return today.after(d);
     }
 
     public String toString() {

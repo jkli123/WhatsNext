@@ -62,6 +62,10 @@ public class Auth {
         mFirebaseAuth.signOut();
     }
 
+    public FirebaseAuth getFirebaseAuth() {
+        return mFirebaseAuth;
+    }
+
     /**
      * Retrieves an intent for starting a sign in flow for user sign in.
      * <p>
@@ -87,7 +91,7 @@ public class Auth {
                 .getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
-                .setIsSmartLockEnabled(true)
+                .setIsSmartLockEnabled(false)
                 .build();
     }
 

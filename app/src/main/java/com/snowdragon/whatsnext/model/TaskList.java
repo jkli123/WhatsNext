@@ -18,7 +18,7 @@ public class TaskList {
     private TaskList() {
         if(sIsFirst) {
             sIsFirst = !sIsFirst;
-            populate(3);
+//            populate(3);
         }
     }
 
@@ -31,6 +31,10 @@ public class TaskList {
 
     public List<Task> getTasks() {
         return sTasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        sTasks = tasks;
     }
 
     // TODO: App to retain the previous sorting order when launched again after onDestroy()
@@ -69,7 +73,7 @@ public class TaskList {
         return taskChange.updateTask(target);
     }
 
-    public Task remove(String id) {
+    public Task delete(String id) {
          //Find Task by UUID
         Task target = read(id);
         sTasks.remove(target);

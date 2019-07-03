@@ -14,11 +14,12 @@
         android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:inputType="textPersonName"
         android:singleLine="false"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:hint="@string/detail_name_edittext_message"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="CS2100 tutorial 9" />
@@ -31,8 +32,8 @@
         android:layout_marginTop="16dp"
         android:inputType="textPersonName"
         android:textSize="24sp"
+        android:hint="@string/detail_category_edittext_message"
         app:layout_constraintStart_toStartOf="parent"
-
         app:layout_constraintTop_toBottomOf="@+id/detail_name_edittext"
         tools:text="Category" />
 
@@ -44,9 +45,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@null"
         android:gravity="start|top"
+        android:hint="@string/detail_description_edittext_message"
         android:inputType="textMultiLine"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/detail_category_edittext"
@@ -54,46 +59,66 @@
 
     <Button
         android:id="@+id/detail_status_button"
-        android:layout_width="120dp"
+        android:layout_width="140dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:text="@string/detail_status_button_message"
-        android:textSize="12sp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/detail_name_edittext"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/detail_deadline_textview"
-        android:layout_width="100dp"
+        android:layout_width="140dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
-        android:text="19/06/2019"
         android:gravity="center"
-        android:textSize="18sp"
+        android:text="19/06/2019"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/detail_description_edittext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/detail_category_edittext"
         app:layout_constraintTop_toBottomOf="@id/detail_status_button" />
 
-    <Button
-        android:id="@+id/detail_save_change_button"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="@string/detail_save_change_button_message"
-        android:textAllCaps="false"
-        android:textSize="24sp"
+        android:orientation="horizontal"
+        android:weightSum="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.474"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/detail_update_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/detail_update_button_message"
+            android:textAllCaps="false"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/detail_delete_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/detail_delete_button_message"
+            android:textAllCaps="false"
+            android:textSize="24sp" />
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

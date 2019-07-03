@@ -2,9 +2,19 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
-        android:id="@+id/menu_new_task_item"
+        android:id="@+id/menu_sign_out_item"
+        android:title="Sign out"
+        android:icon="@drawable/ic_directions_run_white_24dp"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menu_add_task_item"
         android:title="@string/menu_new_task_item_title"
         android:icon="@drawable/ic_add_white_24dp"
         app:showAsAction="always"/>
+
+
+
 </menu>
