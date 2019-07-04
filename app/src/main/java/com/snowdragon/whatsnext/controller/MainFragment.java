@@ -109,7 +109,7 @@ public class MainFragment extends Fragment {
             sFirebaseUser = Auth.getInstance().getCurrentUser();
             Database.getInstance(getActivity())
                     .setOnDatabaseStateChangeListener(databaseStateChangeListener)
-                    .getAllTaskForUser(sFirebaseUser);
+                    .getAllTaskForUser(sFirebaseUser, Database.TASK_COLLECTION);
         } else {
             mTaskRecyclerView.setAdapter(new TaskAdaptor(TaskList.get().getTasks()));
             // mTaskAdaptor = new TaskAdaptor(TaskList.get().getTasks());

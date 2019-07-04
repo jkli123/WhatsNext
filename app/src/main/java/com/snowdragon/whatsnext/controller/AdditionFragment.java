@@ -106,7 +106,7 @@ public class AdditionFragment extends Fragment {
 
                 TaskList.get().add(task);
                 Database.getInstance(getActivity())
-                        .addTaskForUser(Auth.getInstance().getCurrentUser(), task);
+                        .addTaskForUser(Auth.getInstance().getCurrentUser(), task, Database.TASK_COLLECTION);
 
                 // Return to MainFragment
                 getActivity().getSupportFragmentManager()

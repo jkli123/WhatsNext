@@ -130,7 +130,7 @@ public class DetailFragment extends Fragment {
             public void onClick(View v) {
                 TaskChange taskChange = mTaskChangeBuilder.build();
                 TaskList.get().update(mTask.getId(), taskChange);
-                mDatabase.updateTaskForUser(mFirebaseUser, mTask.getId(), taskChange);
+                mDatabase.updateTaskForUser(mFirebaseUser, mTask.getId(), taskChange, Database.TASK_COLLECTION);
                 returnToMainFragment();
             }
         });
@@ -141,7 +141,7 @@ public class DetailFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 TaskList.get().delete(mTask.getId());
-                mDatabase.deleteTaskForUser(mFirebaseUser, mTask);
+                mDatabase.deleteTaskForUser(mFirebaseUser, mTask, Database.TASK_COLLECTION);
                 returnToMainFragment();
             }
         });

@@ -88,7 +88,7 @@ public class DebugFragment extends Fragment {
         TaskChange change = new TaskChange.Builder()
                 .updateName("NewDummyName")
                 .build();
-        mDb.updateTaskForUser(user, VALID_UUID, change);
+        mDb.updateTaskForUser(user, VALID_UUID, change, Database.DONE_COLLECTION);
     }
 
     private void updateDummyTaskWithNewCategorySuccessfullyUpdatesDatabase() {
@@ -96,7 +96,7 @@ public class DebugFragment extends Fragment {
         TaskChange change = new TaskChange.Builder()
                 .updateCategory("NewDummyCategory")
                 .build();
-        mDb.updateTaskForUser(user, VALID_UUID, change);
+        mDb.updateTaskForUser(user, VALID_UUID, change, Database.DONE_COLLECTION);
     }
 
     private void updateDummyTaskWithNewDescriptionSuccessfullyUpdatesDatabase() {
@@ -104,7 +104,7 @@ public class DebugFragment extends Fragment {
         TaskChange change = new TaskChange.Builder()
                 .updateDescription("NewDummyDescription")
                 .build();
-        mDb.updateTaskForUser(user, VALID_UUID, change);
+        mDb.updateTaskForUser(user, VALID_UUID, change, Database.DONE_COLLECTION);
     }
 
     private void updateDummyTaskWithNewStatusSuccessfullyUpdatesDatabase() {
@@ -112,7 +112,7 @@ public class DebugFragment extends Fragment {
         TaskChange change = new TaskChange.Builder()
                 .updateStatus(0)
                 .build();
-        mDb.updateTaskForUser(user, VALID_UUID, change);
+        mDb.updateTaskForUser(user, VALID_UUID, change, Database.DONE_COLLECTION);
     }
 
     private void updateDummyTaskWithNewDeadlineSuccessfullyUpdatesDatabase() {
@@ -120,13 +120,13 @@ public class DebugFragment extends Fragment {
         TaskChange change = new TaskChange.Builder()
                 .updateDeadline(new Date())
                 .build();
-        mDb.updateTaskForUser(user, VALID_UUID, change);
+        mDb.updateTaskForUser(user, VALID_UUID, change, Database.DONE_COLLECTION);
     }
 
     private void deleteDummyTaskForUserSuccessfullyDeletesTask() {
         FirebaseUser user = mAuth.getCurrentUser();
         Task task = getDebugTask();
-        mDb.deleteTaskForUser(user, task);
+        mDb.deleteTaskForUser(user, task, Database.DONE_COLLECTION);
     }
 
     private void signUserOutSuccessfullySignsUserOutOfDatabase() {
@@ -138,11 +138,11 @@ public class DebugFragment extends Fragment {
     private void addTaskWithDebugTaskAndUserAddsSuccessfullyToDatabase(
             FirebaseUser user) {
         Task debugTask = getDebugTask();
-        mDb.addTaskForUser(user, debugTask);
+        mDb.addTaskForUser(user, debugTask, Database.DONE_COLLECTION);
     }
 
     private void getAllTaskForUserReturnsAllTasksInDatabase(final FirebaseUser user) {
-        mDb.getAllTaskForUser(user);
+        mDb.getAllTaskForUser(user, Database.DONE_COLLECTION);
     }
 
     private void signUserIn() {

@@ -37,12 +37,14 @@ import java.util.List;
  */
 public class Database {
 
+    public static final String TASK_COLLECTION = "/tasks";
+    public static final String DONE_COLLECTION = "/done";
+
     private static final String TAG = "Database";
     //This path is only for testing purposes only.
     private static final String DEV_PATH = "root/dev";
     private static final String RELEASE_PATH = "root/release";
     private static final String USERS_COLLECTION = "/users";
-    private static final String TASK_COLLECTION = "/tasks";
 
     private static final int ADD_EVENT = 0;
     private static final int GET_EVENT = 1;
@@ -84,10 +86,10 @@ public class Database {
      * @param task The task to delete based on UUID string.
      * @return An instance of this database.
      */
-    public Database deleteTaskForUser(FirebaseUser user, Task task) {
+    public Database deleteTaskForUser(FirebaseUser user, Task task, String userCollection) {
         if(validateUserTask(user, task)) {
             String path = constructUsersDatabasePath(
-                    DEV_PATH, "/" + user.getUid());
+                    DEV_PATH, "/" + user.getUid(), userCollection);
             return deleteTaskByPath(path, task);
         } else {
             throw new IllegalArgumentException(
@@ -111,10 +113,10 @@ public class Database {
      * @return An instance of this database.
      */
     public Database updateTaskForUser(
-            FirebaseUser user, String taskId, TaskChange taskChange) {
+            FirebaseUser user, String taskId, TaskChange taskChange, String userCollection) {
         if(validateUserTaskChange(user, taskChange)) {
             String path = constructUsersDatabasePath(
-                    DEV_PATH, "/" + user.getUid());
+                    DEV_PATH, "/" + user.getUid(), userCollection);
             return updateTaskByPath(path, taskId, taskChange);
         } else {
             throw new IllegalArgumentException(
@@ -138,10 +140,10 @@ public class Database {
      * @param task The task to add
      * @return An instance of this database.
      */
-    public Database addTaskForUser(FirebaseUser user, Task task) {
+    public Database addTaskForUser(FirebaseUser user, Task task, String userCollection) {
         if(validateUserTask(user, task)) {
             String path = constructUsersDatabasePath(
-                    DEV_PATH, "/" + user.getUid());
+                    DEV_PATH, "/" + user.getUid(), userCollection);
             return addTaskByPath(path, task);
         } else {
             throw new IllegalArgumentException(
@@ -160,10 +162,10 @@ public class Database {
      * @param user The user currently logged in
      * @return An instance of this database.
      */
-    public Database getAllTaskForUser(FirebaseUser user) {
+    public Database getAllTaskForUser(FirebaseUser user, String userCollection) {
         if(validateUser(user)) {
             String path = constructUsersDatabasePath(
-                    DEV_PATH, "/" + user.getUid());
+                    DEV_PATH, "/" + user.getUid(), userCollection);
             return getAllTaskByPath(path);
         } else {
             throw new IllegalArgumentException("Unable to get null user");
@@ -389,11 +391,11 @@ public class Database {
      * @param userPath The path of the user, usually the user's firebase UID.
      * @return The string describing the path to user's tasks collection
      */
-    private String constructUsersDatabasePath(String rootPath, String userPath) {
+    private String constructUsersDatabasePath(String rootPath, String userPath, String userCollectionPath) {
         if(userPath == null) {
             return rootPath + USERS_COLLECTION;
         } else {
-            return rootPath + USERS_COLLECTION + userPath + TASK_COLLECTION;
+            return rootPath + USERS_COLLECTION + userPath + userCollectionPath;
         }
     }
 
