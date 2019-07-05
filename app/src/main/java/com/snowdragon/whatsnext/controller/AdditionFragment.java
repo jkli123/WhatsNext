@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.database.Database;
 import com.snowdragon.whatsnext.model.Task;
@@ -53,15 +54,14 @@ public class AdditionFragment extends Fragment {
         Button addTask = view.findViewById(R.id.addition_add_button);
 
         // Initializing default value on taskStatus Button
-        mStatusIdx = Task.UNDONE;
+        mStatusIdx = Task.NOT_DONE;
         taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
 
-        // Allowing status to be changed on click. Status cycles through the four default statuses -
-        // COMPLETED, IN_PROGRESS, ON_HOLD, UNDONE
+        // Allowing status to be changed on click. Status cycles through the four default statuses
         taskStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateStatusIndex();
+                mStatusIdx = Task.toggleStatus(mStatusIdx);
                 taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
             }
         });
@@ -90,6 +90,9 @@ public class AdditionFragment extends Fragment {
             }
         });
 
+        // Initializing reference to database
+        final Database database = Database.getInstance(getActivity());
+        final FirebaseUser firebaseUser = Auth.getInstance().getCurrentUser();
 
         // "Add Task" button performs an addition of Task to sTasks in TaskList
         // and returns to the MainFragment when clicked on
@@ -101,12 +104,16 @@ public class AdditionFragment extends Fragment {
                 task.setCategory(taskCategory.getText().toString());
                 task.setDescription(taskDescription.getText().toString());
                 task.setDeadline(taskDeadlineValue.getTime());
-                task.setStatus(Task.UNDONE);
+                task.setStatus(Task.getStatusIndexFromString(taskStatus.getText().toString()));
                 task.setId(UUID.randomUUID().toString());
 
                 TaskList.get().add(task);
-                Database.getInstance(getActivity())
-                        .addTaskForUser(Auth.getInstance().getCurrentUser(), task, Database.TASK_COLLECTION);
+                if (task.getStatus() == Task.DONE) {
+                    database.addTaskForUser(firebaseUser, task, Database.DONE_COLLECTION);
+                } else {
+                    database.addTaskForUser(firebaseUser, task, Database.TASK_COLLECTION);
+                }
+
 
                 // Return to MainFragment
                 getActivity().getSupportFragmentManager()
@@ -120,16 +127,5 @@ public class AdditionFragment extends Fragment {
         });
 
         return view;
-    }
-
-    /* TODO: Update the status button into some kind of drop down selection or image selector to
-     * select among 4 status (Might want to refactor your status names to something more natural)
-     */
-
-    /*
-     * Used in the taskStatus button click listener to toggle between the different statuses on click
-     */
-    private void updateStatusIndex() {
-        mStatusIdx = (mStatusIdx+1) % 4;
     }
 }

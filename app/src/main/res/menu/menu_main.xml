@@ -4,16 +4,39 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_sign_out_item"
-        android:title="Sign out"
-        android:icon="@drawable/ic_directions_run_white_24dp"
-        app:showAsAction="always"/>
-
-    <item
         android:id="@+id/menu_add_task_item"
         android:title="@string/menu_new_task_item_title"
         android:icon="@drawable/ic_add_white_24dp"
         app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/menu_sort_item"
+        android:icon="@drawable/ic_directions_run_white_24dp"
+        android:title="Sort by"
+        app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/menu_show_tasks_done"
+        android:icon="@drawable/ic_directions_run_white_24dp"
+        android:title="Completed tasks"
+        app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/menu_show_tasks_not_done"
+        android:icon="@drawable/ic_directions_run_white_24dp"
+        android:title="Unfinished tasks"
+        app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/menu_sign_out_item"
+        android:icon="@drawable/ic_directions_run_white_24dp"
+        android:title="Sign out"
+        app:showAsAction="collapseActionView" />
+
+
+
+
+
 
 
 

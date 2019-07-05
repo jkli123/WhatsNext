@@ -12,16 +12,16 @@ public class TaskChangeTest {
     private final String dummyCat = "dummyCat";
     private final String dummyDesc = "dummyDesc";
     private final Date dummyDeadline = new Date();
-    private final int dummyStatus = Task.COMPLETED;
+    private final int dummyStatus = Task.DONE;
 
     @Test
     public void updateTaskWithAllParemetersReturnsCorrectlyUpdatedInfo() {
         TaskChange change = new TaskChange.Builder()
-                .add(TaskChange.NAME, dummyName)
-                .add(TaskChange.CATEGORY, dummyCat)
-                .add(TaskChange.DESCRIPTION, dummyDesc)
-                .add(TaskChange.DEADLINE, dummyDeadline)
-                .add(TaskChange.STATUS, dummyStatus)
+                .updateName(dummyName)
+                .updateCategory(dummyCat)
+                .updateDescription(dummyDesc)
+                .updateDeadline(dummyDeadline)
+                .updateStatus(dummyStatus)
                 .build();
         Task task = new Task();
         assertTrue(change.updateTask(task));

@@ -16,4 +16,9 @@
     <string name="detail_description_edittext_message">Add description</string>
     <string name="detail_category_edittext_message">Add category</string>
     <string name="detail_name_edittext_message">Name of task</string>
+    <string name="sort_by_name_textview_message">Name</string>
+    <string name="sort_by_category_textview_message">Category</string>
+    <string name="sort_by_status_textview_message">Status</string>
+    <string name="sort_by_name_deadline_message">Deadline</string>
+    <string name="sort_selection_title">Sort by</string>
 </resources>

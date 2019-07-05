@@ -51,7 +51,9 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "Running actual app instance");
 
             if (!Auth.getInstance().isCurrentUserSignedIn()) {
-                runSignInFlow();
+                startActivityForResult(Auth.getAuthSignInIntent(
+                        Auth.EMAIL_PROVIDER,
+                        Auth.GOOGLE_PROVIDER),SIGN_IN_INTENT);
             } else {
                 runMainFragment();
             }
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "SIGN IN FLOW COMPLETED");
+        Log.d(TAG, "SIGN IN FLOW DONE");
         if (requestCode == SIGN_IN_INTENT) {
             if (resultCode == RESULT_OK) {
                 Log.d(TAG, "SIGN IN OK");
@@ -72,17 +74,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void runSignInFlow() {
-        startActivityForResult(Auth.getAuthSignInIntent(
-                Auth.EMAIL_PROVIDER,
-                Auth.GOOGLE_PROVIDER),SIGN_IN_INTENT);
-    }
-
     private void runMainFragment() {
         FragmentManager fm = getSupportFragmentManager();
-        Fragment mainFragment = new MainFragment();
+        Fragment mainFragment = MainFragment.getInstance().setSignOutListener(
+                new MainFragment.SignOutListener() {
+                    @Override
+                    public void onSignOut() {
+                        startActivityForResult(Auth.getAuthSignInIntent(
+                                Auth.EMAIL_PROVIDER,
+                                Auth.GOOGLE_PROVIDER),SIGN_IN_INTENT);
+                    }
+                });
         fm.beginTransaction()
-                .add(R.id.fragment_container, mainFragment)
+                .replace(R.id.fragment_container, mainFragment)
                 .commit();
     }
 }

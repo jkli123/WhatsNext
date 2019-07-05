@@ -9,11 +9,6 @@ import java.util.Map;
 public class TaskChange {
     private static final String TAG = "TaskChange";
 
-    public static final String NAME = "name";
-    public static final String CATEGORY = "category";
-    public static final String DESCRIPTION = "description";
-    public static final String DEADLINE = "deadline";
-    public static final String STATUS = "status";
 
     private final HashMap<String, Object> mFieldValueHashMap;
 
@@ -26,27 +21,27 @@ public class TaskChange {
     }
 
     public boolean updateTask(@NonNull Task task) {
-        String newName = (String) mFieldValueHashMap.get(NAME);
+        String newName = (String) mFieldValueHashMap.get(Task.NAME);
         if (newName != null) {
             task.setName(newName);
         }
 
-        String newCategory = (String) mFieldValueHashMap.get(CATEGORY);
+        String newCategory = (String) mFieldValueHashMap.get(Task.CATEGORY);
         if (newCategory != null) {
             task.setCategory(newCategory);
         }
 
-        String newDescription = (String) mFieldValueHashMap.get(DESCRIPTION);
+        String newDescription = (String) mFieldValueHashMap.get(Task.DESCRIPTION);
         if (newDescription != null) {
             task.setDescription(newDescription);
         }
 
-        Date newDeadline = (Date) mFieldValueHashMap.get(DEADLINE);
+        Date newDeadline = (Date) mFieldValueHashMap.get(Task.DEADLINE);
         if (newDeadline != null) {
             task.setDeadline(newDeadline);
         }
 
-        Integer newStatus = (Integer) mFieldValueHashMap.get(STATUS);
+        Integer newStatus = (Integer) mFieldValueHashMap.get(Task.STATUS);
         if (newStatus != null) {
             task.setStatus(newStatus);
         }
@@ -62,27 +57,27 @@ public class TaskChange {
         }
 
         public Builder updateName(String newName) {
-            mFieldValueHashMap.put(NAME, newName);
+            mFieldValueHashMap.put(Task.NAME, newName);
             return this;
         }
 
         public Builder updateCategory(String newCategory) {
-            mFieldValueHashMap.put(CATEGORY, newCategory);
+            mFieldValueHashMap.put(Task.CATEGORY, newCategory);
             return this;
         }
 
         public Builder updateDescription(String newDescription) {
-            mFieldValueHashMap.put(DESCRIPTION, newDescription);
+            mFieldValueHashMap.put(Task.DESCRIPTION, newDescription);
             return this;
         }
 
         public Builder updateStatus(int newStatus) {
-            mFieldValueHashMap.put(STATUS, newStatus);
+            mFieldValueHashMap.put(Task.STATUS, newStatus);
             return this;
         }
 
         public Builder updateDeadline(Date newDeadline) {
-            mFieldValueHashMap.put(DEADLINE, newDeadline);
+            mFieldValueHashMap.put(Task.DEADLINE, newDeadline);
             return this;
         }
 

@@ -30,6 +30,7 @@ public class DetailFragment extends Fragment {
 
     private static final String KEY = "TASK";
     private static final String TAG = "DetailFragment";
+    private static final int SIGN_IN_INTENT = 0;
 
     private Task mTask;
     private FirebaseUser mFirebaseUser = Auth.getInstance().getCurrentUser();
@@ -101,28 +102,27 @@ public class DetailFragment extends Fragment {
             }
         });
 
-
-        // Allowing status to be changed on click. Status cycles through the four default statuses -
-        // COMPLETED, IN_PROGRESS, ON_HOLD, UNDONE
+        // Allowing status to be changed on click. Status cycles through the four default statuses
         taskStatus.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                updateStatusIndex();
+                mStatusIdx = Task.toggleStatus(mStatusIdx);
                 taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
             }
         });
 
         // Adding TextChangeListeners to all fields
         taskName.addTextChangedListener(
-                new ViewTextWatcher(TaskChange.NAME));
+                new ViewTextWatcher(Task.NAME));
         taskCategory.addTextChangedListener(
-                new ViewTextWatcher(TaskChange.CATEGORY));
+                new ViewTextWatcher(Task.CATEGORY));
         taskDescription.addTextChangedListener(
-                new ViewTextWatcher(TaskChange.DESCRIPTION));
+                new ViewTextWatcher(Task.DESCRIPTION));
         taskDeadline.addTextChangedListener(
-                new ViewTextWatcher(TaskChange.DEADLINE));
+                new ViewTextWatcher(Task.DEADLINE));
         taskStatus.addTextChangedListener(
-                new ViewTextWatcher(TaskChange.STATUS));
+                new ViewTextWatcher(Task.STATUS));
 
         // Adding the ClickListener to the "Update" Button
         mUpdateButton.setOnClickListener(new View.OnClickListener() {
@@ -130,7 +130,15 @@ public class DetailFragment extends Fragment {
             public void onClick(View v) {
                 TaskChange taskChange = mTaskChangeBuilder.build();
                 TaskList.get().update(mTask.getId(), taskChange);
-                mDatabase.updateTaskForUser(mFirebaseUser, mTask.getId(), taskChange, Database.TASK_COLLECTION);
+                if (mTask.getStatus() == Task.DONE) {
+                    mDatabase.deleteTaskForUser(mFirebaseUser, mTask, Database.TASK_COLLECTION);
+                    mDatabase.addTaskForUser(mFirebaseUser, mTask, Database.DONE_COLLECTION);
+                } else {
+                    mDatabase.updateTaskForUser(mFirebaseUser,
+                            mTask.getId(),
+                            taskChange,
+                            Database.TASK_COLLECTION);
+                }
                 returnToMainFragment();
             }
         });
@@ -142,6 +150,7 @@ public class DetailFragment extends Fragment {
             public void onClick(View v) {
                 TaskList.get().delete(mTask.getId());
                 mDatabase.deleteTaskForUser(mFirebaseUser, mTask, Database.TASK_COLLECTION);
+                mDatabase.deleteTaskForUser(mFirebaseUser, mTask, Database.DONE_COLLECTION);
                 returnToMainFragment();
             }
         });
@@ -162,16 +171,6 @@ public class DetailFragment extends Fragment {
                 .commit();
     }
 
-
-    /*
-     * Used in the taskStatus button click listener to toggle between the different statuses on click
-     */
-    private void updateStatusIndex() {
-        mStatusIdx = (mStatusIdx+1) % 4;
-    }
-
-
-
     private class ViewTextWatcher implements TextWatcher {
         private String mField;
 
@@ -188,29 +187,30 @@ public class DetailFragment extends Fragment {
 
         @Override
         public void afterTextChanged(Editable s) {
-            mUpdateButton.setEnabled(true);
-            String updatedValue = s.toString();
-            switch (mField) {
-                case TaskChange.NAME:
-                    mTaskChangeBuilder.updateName(updatedValue);
-                    break;
+            if (mTask.getStatus() == Task.NOT_DONE) {
+                mUpdateButton.setEnabled(true);
+                String updatedValue = s.toString();
+                switch (mField) {
+                    case Task.NAME:
+                        mTaskChangeBuilder.updateName(updatedValue);
+                        break;
 
-                case TaskChange.CATEGORY:
-                    mTaskChangeBuilder.updateCategory(updatedValue);
-                    break;
+                    case Task.CATEGORY:
+                        mTaskChangeBuilder.updateCategory(updatedValue);
+                        break;
 
-                case TaskChange.DESCRIPTION:
-                    mTaskChangeBuilder.updateDescription(updatedValue);
-                    break;
+                    case Task.DESCRIPTION:
+                        mTaskChangeBuilder.updateDescription(updatedValue);
+                        break;
 
-                case TaskChange.STATUS:
-                    mTaskChangeBuilder.updateStatus(Task.getStatusIndexFromString(updatedValue));
-                    break;
+                    case Task.STATUS:
+                        mTaskChangeBuilder.updateStatus(Task.getStatusIndexFromString(updatedValue));
+                        break;
 
-                case TaskChange.DEADLINE:
-                    mTaskChangeBuilder.updateDeadline(mTaskDeadlineValue.getTime());
-                    break;
-
+                    case Task.DEADLINE:
+                        mTaskChangeBuilder.updateDeadline(mTaskDeadlineValue.getTime());
+                        break;
+                }
             }
 
         }

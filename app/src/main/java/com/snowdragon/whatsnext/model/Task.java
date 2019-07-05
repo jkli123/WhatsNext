@@ -18,14 +18,19 @@ public class Task implements Serializable {
      */
     private static final long serialVersionUID = 1L;
     private static final String TAG = "Task";
+    public static final String NAME = "name";
+    public static final String CATEGORY = "category";
+    public static final String DESCRIPTION = "description";
+    public static final String DEADLINE = "deadline";
+    public static final String STATUS = "status";
 
     public static final String WORK_CATEGORY = "WORK";
     public static final String STUDY_CATEGORY = "STUDY";
-    public static final int COMPLETED = 0;
+    public static final int DONE = 0;
     public static final int IN_PROGRESS = 1;
     public static final int ON_HOLD = 2;
-    public static final int UNDONE = 3;
-    public static List<String> sStatusList = Arrays.asList("COMPLETED", "IN PROGRESS", "ON HOLD", "UNDONE");
+    public static final int NOT_DONE = 3;
+    public static List<String> sStatusList = Arrays.asList("DONE", "IN PROGRESS", "ON HOLD", "NOT DONE");
 
     private String mName;
     private String mCategory;
@@ -49,6 +54,10 @@ public class Task implements Serializable {
      */
     public static String getStatusStringFromIndex(int idx) {
         return sStatusList.get(idx);
+    }
+
+    public static int toggleStatus(int status) {
+        return status <= 0 ? 3 : status - 1;
     }
 
     public String getName() {

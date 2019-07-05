@@ -13,6 +13,7 @@ public class TaskList {
     private static final String TAG = "TaskList";
 
     private static List<Task> sTasks;
+    private static List<Task> sTasksDone;
     private static boolean sIsFirst = true;
 
     private TaskList() {
@@ -25,6 +26,7 @@ public class TaskList {
     public static TaskList get() {
         if (sTasks == null) {
             sTasks = new ArrayList<>();
+            sTasksDone = new ArrayList<>();
         }
         return new TaskList();
     }
@@ -37,17 +39,31 @@ public class TaskList {
         sTasks = tasks;
     }
 
-    // TODO: App to retain the previous sorting order when launched again after onDestroy()
-    public List<Task> sort(Comparator<Task> taskComparator) {
-        List<Task> newList = new ArrayList<>();
-        newList.addAll(sTasks);
-        Collections.sort(newList, taskComparator);
-        sTasks = newList;
-        return newList;
+    public List<Task> getTasksDone() {
+        return sTasksDone;
+    }
+
+    public void setTasksDone(List<Task> tasksDone) { sTasksDone = tasksDone; }
+
+    public TaskList sort(Comparator<Task> taskComparator) {
+        List<Task> newTasks = new ArrayList<>();
+        newTasks.addAll(sTasks);
+        Collections.sort(newTasks, taskComparator);
+        sTasks = newTasks;
+
+        List<Task> newTasksDone = new ArrayList<>();
+        newTasksDone.addAll(sTasksDone);
+        Collections.sort(newTasksDone, taskComparator);
+        sTasksDone = newTasksDone;
+        return this;
     }
 
     public void add(Task task) {
-        sTasks.add(task);
+        if (task.getStatus() == Task.DONE) {
+            sTasksDone.add(task);
+        } else {
+            sTasks.add(task);
+        }
     }
 
     public Task read(String id) throws IllegalArgumentException {
@@ -56,7 +72,10 @@ public class TaskList {
         }
         // Find Task by UUID
         Task target = null;
-        for (Task task : sTasks) {
+        List<Task> newList = new ArrayList<>();
+        newList.addAll(sTasks);
+        newList.addAll(sTasksDone);
+        for (Task task : newList) {
             if (task.getId().equals(id)) {
                 target = task;
                 break;
@@ -68,15 +87,19 @@ public class TaskList {
     public boolean update(String id, TaskChange taskChange) {
         // Find Task by UUID
         Task target = read(id);
-
-        // Update all changed fields using data in taskChange
-        return taskChange.updateTask(target);
+        boolean res = taskChange.updateTask(target);
+        if (target.getStatus() == Task.DONE) {
+            sTasks.remove(target);
+            sTasksDone.add(target);
+        }
+        return res;
     }
 
     public Task delete(String id) {
          //Find Task by UUID
         Task target = read(id);
         sTasks.remove(target);
+        sTasksDone.remove(target);
         return target;
     }
 
@@ -94,6 +117,4 @@ public class TaskList {
         }
     }
 
-    // TODO: generateTaskComparator(String field)
-    // where field = "Name", "Category", "Deadline" or "Status"
 }
