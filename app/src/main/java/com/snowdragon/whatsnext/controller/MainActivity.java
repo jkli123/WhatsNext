@@ -3,12 +3,19 @@ package com.snowdragon.whatsnext.controller;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.navigation.NavigationView;
 import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.debug.DebugFragment;
 
@@ -26,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private static final boolean isDebugRun = false;
 
+    private Auth auth;
+
     /**
      * Initialization of Main Activity by launching FragmentManager.
      *
@@ -41,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initAppBar();
+        auth = Auth.getInstance();
+
         if(isDebugRun) {
             Log.i(TAG, "Running debug run of app");
             FragmentManager fm = getSupportFragmentManager();
@@ -50,10 +62,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.i(TAG, "Running actual app instance");
 
-            if (!Auth.getInstance().isCurrentUserSignedIn()) {
-                startActivityForResult(Auth.getAuthSignInIntent(
-                        Auth.EMAIL_PROVIDER,
-                        Auth.GOOGLE_PROVIDER),SIGN_IN_INTENT);
+            if (!auth.isCurrentUserSignedIn()) {
+                runSignIn();
             } else {
                 runMainFragment();
             }
@@ -74,19 +84,68 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void initAppBar() {
+        Toolbar toolbar = findViewById(R.id.toolbar_main);
+        setSupportActionBar(toolbar);
+        final DrawerLayout drawer = findViewById(R.id.main_drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this,
+                drawer,
+                toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_closer);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        toggle.syncState();
+        NavigationView navigationView = findViewById(R.id.main_nav_view);
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                boolean isSuccessful = false;
+                switch(menuItem.getItemId()) {
+                    case R.id.main_home_menu:
+                        Fragment fragment = MainFragment.getInstance();
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                                .replace(R.id.fragment_container, fragment)
+                                .commit();
+                        isSuccessful = true;
+                        break;
+                    case R.id.main_sign_out_menu:
+                        if(auth.isCurrentUserSignedIn()) {
+                            auth.signOutCurrentUser();
+                            runSignIn();
+                        }
+                        isSuccessful = true;
+                        break;
+                }
+                drawer.closeDrawers();
+                return isSuccessful;
+            }
+        });
+    }
+
     private void runMainFragment() {
         FragmentManager fm = getSupportFragmentManager();
         Fragment mainFragment = MainFragment.getInstance().setSignOutListener(
                 new MainFragment.SignOutListener() {
                     @Override
                     public void onSignOut() {
-                        startActivityForResult(Auth.getAuthSignInIntent(
-                                Auth.EMAIL_PROVIDER,
-                                Auth.GOOGLE_PROVIDER),SIGN_IN_INTENT);
+                        runSignIn();
                     }
                 });
         fm.beginTransaction()
                 .replace(R.id.fragment_container, mainFragment)
                 .commit();
+    }
+
+    private void runSignIn() {
+        if(auth.isCurrentUserSignedIn()) {
+            return;
+        }
+        Intent signInIntent = Auth.getAuthSignInIntent(Auth.EMAIL_PROVIDER, Auth.GOOGLE_PROVIDER);
+        startActivityForResult(signInIntent, SIGN_IN_INTENT);
     }
 }

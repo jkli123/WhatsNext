@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/menu_add_task_item"
         android:title="@string/menu_new_task_item_title"
         android:icon="@drawable/ic_add_white_24dp"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/menu_sort_item"
         android:icon="@drawable/ic_directions_run_white_24dp"
-        android:title="Sort by"
-        app:showAsAction="collapseActionView" />
+        android:title="@string/sort_by"
+        app:showAsAction="collapseActionView" >
+        <menu>
+            <item
+                android:id="@+id/menu_sort_by_name_item"
+                android:title="@string/sort_by_name_textview_message"/>
+            <item
+                android:id="@+id/menu_sort_by_cat_item"
+                android:title="@string/sort_by_category_textview_message"/>
+            <item
+                android:id="@+id/menu_sort_by_deadline_item"
+                android:title="@string/sort_by_name_deadline_message"/>
+            <item
+                android:id="@+id/menu_sort_by_status_item"
+                android:title="@string/sort_by_status_textview_message"/>
+        </menu>
+    </item>
 
     <item
         android:id="@+id/menu_show_tasks_done"
         android:icon="@drawable/ic_directions_run_white_24dp"
-        android:title="Completed tasks"
+        android:title="@string/completed_tasks"
         app:showAsAction="collapseActionView" />
 
     <item
         android:id="@+id/menu_show_tasks_not_done"
         android:icon="@drawable/ic_directions_run_white_24dp"
-        android:title="Unfinished tasks"
+        android:title="@string/unfinished_tasks"
         app:showAsAction="collapseActionView" />
-
-    <item
-        android:id="@+id/menu_sign_out_item"
-        android:icon="@drawable/ic_directions_run_white_24dp"
-        android:title="Sign out"
-        app:showAsAction="collapseActionView" />
-
-
-
-
-
-
-
-
 </menu>

@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,8 +29,14 @@ import com.snowdragon.whatsnext.model.TaskList;
 import java.util.Comparator;
 import java.util.List;
 
+//TODO refactor out done list
+//TODO refactor out sign out listener?? i have no idea what it is for, its not being called anywhere in this class.
+//TODO sort the tasks when they come out of the database. no order when they are set for now.
+//TODO consider refactoring out TaskList's sort method, currently it sorts multiple lists and the name of the method does not convey the intention of code
+//TODO consider refactoring our sSortField and mTaskComparator variable out of this class. They make code hard to follow.
+//TODO as per the first TODO, refactoring the done list should get rid of the methods dealing with swapping of the lists.
+//TODO Bug 1: When u scroll the app, and click to detail fragment, additional margin is provided to buttons as app bar is now hidden
 public class MainFragment extends Fragment {
-
 
     private static final String TAG = "MainFragment";
     private static final int SIGN_IN_INTENT = 0;
@@ -41,8 +48,7 @@ public class MainFragment extends Fragment {
     public static int sListType;
 
     private RecyclerView mTaskRecyclerView;
-    private TaskAdaptor mTaskAdaptor;
-    private MainActivity mMainActivity;
+    private TaskAdaptor mAdapter;
     private Comparator<Task> mTaskComparator;
     private SignOutListener mSignOutListener;
 
@@ -72,30 +78,42 @@ public class MainFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        MainFragment fragment;
         switch (item.getItemId()) {
             case R.id.menu_add_task_item:
                 runAdditionFragment();
                 break;
-
-            case R.id.menu_sort_item:
-                runSortFragment();
-                break;
-
             case R.id.menu_show_tasks_done:
                 setListType(TASKS_DONE);
                 restartMainFragment();
                 break;
-
             case R.id.menu_show_tasks_not_done:
                 setListType(TASKS_NOT_DONE);
                 restartMainFragment();
                 break;
-
-
-            case R.id.menu_sign_out_item:
-                runSignOutFlow();
+            case R.id.menu_sort_item:
+                mTaskComparator = null;
                 break;
+            case R.id.menu_sort_by_name_item:
+                sSortField = Task.NAME;
+                setTaskComparator(sSortField);
+                break;
+            case R.id.menu_sort_by_cat_item:
+                sSortField = Task.CATEGORY;
+                setTaskComparator(sSortField);
+                break;
+            case R.id.menu_sort_by_status_item:
+                sSortField = Task.STATUS;
+                setTaskComparator(sSortField);
+                break;
+            case R.id.menu_sort_by_deadline_item:
+                sSortField = Task.DEADLINE;
+                setTaskComparator(sSortField);
+                break;
+        }
+        if(mTaskComparator != null) {
+            TaskList.get().sort(mTaskComparator);
+            mAdapter.updateList(TaskList.get().getTasks());
+            mAdapter.notifyDataSetChanged();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -113,17 +131,11 @@ public class MainFragment extends Fragment {
         mTaskRecyclerView = view.findViewById(R.id.task_recycler_view);
         mTaskRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        // Initialize Sorting order for RecyclerView items
-        if (sSortField == null) {
-            setSortField(Task.DEADLINE);
-        }
-
-        setTaskComparator(sSortField);
+        setTaskComparator(sSortField = Task.DEADLINE);
 
         DividerItemDecoration dividerItemDecoration =
                 new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
         mTaskRecyclerView.addItemDecoration(dividerItemDecoration);
-//        mTaskAdaptor = new TaskAdaptor(TaskList.get().getTasks());
 
         if (sFirebaseUser == null) {
             sFirebaseUser = Auth.getInstance().getCurrentUser();
@@ -138,20 +150,10 @@ public class MainFragment extends Fragment {
         return view;
     }
 
-
     private void runAdditionFragment() {
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, AdditionFragment.newInstance())
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    private void runSortFragment() {
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, SortFragment.newInstance(sSortField))
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .addToBackStack(null)
                 .commit();
@@ -168,27 +170,6 @@ public class MainFragment extends Fragment {
                 .commit();
     }
 
-    private void runSignOutFlow() {
-        Auth.getInstance().signOutCurrentUser();
-        if (mSignOutListener == null) {
-            setSignOutListener(
-                    new MainFragment.SignOutListener() {
-                        @Override
-                        public void onSignOut() {
-                            startActivityForResult(Auth.getAuthSignInIntent(
-                                    Auth.EMAIL_PROVIDER,
-                                    Auth.GOOGLE_PROVIDER), SIGN_IN_INTENT);
-                        }
-                    });
-        }
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .remove(this)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .commit();
-        mSignOutListener.onSignOut();
-    }
-
     public MainFragment setSignOutListener(SignOutListener signOutListener) {
         mSignOutListener = signOutListener;
         return this;
@@ -196,10 +177,6 @@ public class MainFragment extends Fragment {
 
     private void setListType(int listType) {
         sListType = listType;
-    }
-
-    public static void setSortField(String field) {
-        sSortField = field;
     }
 
     private void setTaskComparator(String field) {
@@ -276,16 +253,16 @@ public class MainFragment extends Fragment {
      * Sort and attach tasks to the TaskAdaptor in RecyclerView.
      */
     private void updateRecyclerViewWithTasksNotDone() {
-        mTaskRecyclerView.setAdapter(
-                new TaskAdaptor(TaskList.get().sort(mTaskComparator).getTasks()));
+        mAdapter = new TaskAdaptor(TaskList.get().getTasks());
+        mTaskRecyclerView.setAdapter(mAdapter);
     }
 
     /*
      * Sort and attach tasksDone to the TaskAdaptor in RecyclerView.
      */
     private void updateRecyclerViewWithTasksDone() {
-        mTaskRecyclerView.setAdapter(
-                new TaskAdaptor(TaskList.get().sort(mTaskComparator).getTasksDone()));
+        mAdapter = new TaskAdaptor(TaskList.get().getTasksDone());
+        mTaskRecyclerView.setAdapter(mAdapter);
     }
 
     private class TaskHolder extends RecyclerView.ViewHolder
@@ -332,7 +309,7 @@ public class MainFragment extends Fragment {
 
     private class TaskAdaptor extends RecyclerView.Adapter<TaskHolder> {
 
-        private final List<Task> mTasks;
+        private List<Task> mTasks;
 
         public TaskAdaptor(List<Task> tasks) {
             mTasks = tasks;
@@ -355,6 +332,10 @@ public class MainFragment extends Fragment {
         @Override
         public int getItemCount() {
             return mTasks.size();
+        }
+
+        public void updateList(List<Task> taskList) {
+            mTasks = taskList;
         }
     }
 
