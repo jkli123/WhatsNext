@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.snowdragon.whatsnext.database.Auth;
@@ -26,22 +25,21 @@ import com.snowdragon.whatsnext.model.TaskList;
 
 import java.util.Calendar;
 
-public class DetailFragment extends Fragment {
+public class DetailFragment extends AbstractStaticFragment {
 
     private static final String KEY = "TASK";
     private static final String TAG = "DetailFragment";
-    private static final int SIGN_IN_INTENT = 0;
 
     private Task mTask;
     private FirebaseUser mFirebaseUser = Auth.getInstance().getCurrentUser();
-    private final Calendar mTaskDeadlineValue = Calendar.getInstance();;
+    private final Calendar mTaskDeadlineValue = Calendar.getInstance();
     private TaskChange.Builder mTaskChangeBuilder;
     private int mStatusIdx;
     private Button mUpdateButton;
     private Database mDatabase = Database.getInstance(getActivity());
 
 
-    public static DetailFragment newInstance(Task task) {
+     static DetailFragment newInstance(Task task) {
 
         Bundle args = new Bundle();
         args.putSerializable(KEY, task);
@@ -55,6 +53,7 @@ public class DetailFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
         mTaskChangeBuilder = new TaskChange.Builder();
 

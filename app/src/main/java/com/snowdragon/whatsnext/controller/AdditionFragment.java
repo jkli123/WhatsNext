@@ -24,11 +24,11 @@ import com.snowdragon.whatsnext.model.TaskList;
 import java.util.Calendar;
 import java.util.UUID;
 
-public class AdditionFragment extends Fragment {
+public class AdditionFragment extends AbstractStaticFragment {
     private static final String TAG = "AdditionFragment";
     private int mStatusIdx;
 
-    public static AdditionFragment newInstance() {
+    static AdditionFragment newInstance() {
         Bundle args = new Bundle();
         AdditionFragment fragment = new AdditionFragment();
         fragment.setArguments(args);
@@ -43,6 +43,7 @@ public class AdditionFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_addition, container, false);
 
         // Fetching the references to View items in this fragment

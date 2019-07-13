@@ -35,7 +35,6 @@ import java.util.List;
 //TODO consider refactoring out TaskList's sort method, currently it sorts multiple lists and the name of the method does not convey the intention of code
 //TODO consider refactoring our sSortField and mTaskComparator variable out of this class. They make code hard to follow.
 //TODO as per the first TODO, refactoring the done list should get rid of the methods dealing with swapping of the lists.
-//TODO Bug 1: When u scroll the app, and click to detail fragment, additional margin is provided to buttons as app bar is now hidden
 public class MainFragment extends Fragment {
 
     private static final String TAG = "MainFragment";
