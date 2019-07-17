@@ -8,4 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ItemListBackgroundImage">
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:layout_width">@dimen/item_list_icon_width</item>
+        <item name="android:layout_height">@dimen/item_list_icon_height</item>
+    </style>
+
+    <style name="ItemListBackgroundText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
 </resources>

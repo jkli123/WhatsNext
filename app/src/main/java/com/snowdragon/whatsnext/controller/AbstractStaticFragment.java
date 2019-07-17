@@ -33,7 +33,7 @@ import java.util.Objects;
  * be hidden by the scrollable view(when scrolling down) is shown
  * at the top again when switching to a static view.
  */
-public class AbstractStaticFragment extends Fragment {
+public abstract class AbstractStaticFragment extends Fragment {
 
     @Nullable
     @Override

@@ -1,5 +1,7 @@
 package com.snowdragon.whatsnext.model;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
@@ -113,14 +115,22 @@ public class Task implements Serializable {
     }
 
     public boolean isOverdue() {
+        //Only compared year, month, day. Time is of no issue here.
         Calendar d = Calendar.getInstance();
         d.setTime(mDeadline);
         d.set(d.get(Calendar.YEAR),
                 d.get(Calendar.MONTH),
                 d.get(Calendar.DAY_OF_MONTH),
                 0, 0, 0);
-        d.add(Calendar.DAY_OF_MONTH, 1);
+        d.set(Calendar.MILLISECOND, 0);
+        //Extra buffer of one day
+        d.roll(Calendar.DAY_OF_MONTH, 1);
         Calendar today = Calendar.getInstance();
+        today.set(today.get(Calendar.YEAR),
+                today.get(Calendar.MONTH),
+                today.get(Calendar.DAY_OF_MONTH),
+                0, 0, 0);
+        today.set(Calendar.MILLISECOND, 0);
         return today.after(d);
     }
 

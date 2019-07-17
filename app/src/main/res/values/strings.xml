@@ -28,4 +28,9 @@
     <string name="sort_by">Sort by</string>
     <string name="completed_tasks">Completed tasks</string>
     <string name="unfinished_tasks">Unfinished tasks</string>
+    <string name="delete">Delete</string>
+    <string name="not_done">Not Done</string>
+    <string name="pause">Pause</string>
+    <string name="in_progress">In Progress</string>
+    <string name="done">Done</string>
 </resources>

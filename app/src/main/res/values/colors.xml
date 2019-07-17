@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorOverdue">#ff6666</color>
+    <color name="colorSwipeRightBackground">#4d94ff</color>
+    <color name="colorSwipeLeftBackground">#ff3333</color>
 </resources>

@@ -1,14 +1,16 @@
 package com.snowdragon.whatsnext.controller;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,9 +18,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.database.Database;
@@ -35,6 +39,7 @@ import java.util.List;
 //TODO consider refactoring out TaskList's sort method, currently it sorts multiple lists and the name of the method does not convey the intention of code
 //TODO consider refactoring our sSortField and mTaskComparator variable out of this class. They make code hard to follow.
 //TODO as per the first TODO, refactoring the done list should get rid of the methods dealing with swapping of the lists.
+//TODO change status when swiping right activates the background view, handle clicks on the image views.
 public class MainFragment extends Fragment {
 
     private static final String TAG = "MainFragment";
@@ -254,6 +259,7 @@ public class MainFragment extends Fragment {
     private void updateRecyclerViewWithTasksNotDone() {
         mAdapter = new TaskAdaptor(TaskList.get().getTasks());
         mTaskRecyclerView.setAdapter(mAdapter);
+        setupItemTouchHelper();
     }
 
     /*
@@ -262,6 +268,13 @@ public class MainFragment extends Fragment {
     private void updateRecyclerViewWithTasksDone() {
         mAdapter = new TaskAdaptor(TaskList.get().getTasksDone());
         mTaskRecyclerView.setAdapter(mAdapter);
+        setupItemTouchHelper();
+    }
+
+    private void setupItemTouchHelper() {
+        ItemTouchHelper itemTouchHelper = new
+                ItemTouchHelper(new SwipeToDeleteCallback(mAdapter));
+        itemTouchHelper.attachToRecyclerView(mTaskRecyclerView);
     }
 
     private class TaskHolder extends RecyclerView.ViewHolder
@@ -270,12 +283,18 @@ public class MainFragment extends Fragment {
         private final TextView mTaskName;
         private final TextView mTaskDeadline;
         private Task mTask;
+        View mForegroundView;
+        View mBackgroundViewLeft;
+        View mBackgroundViewRight;
 
-        public TaskHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.list_item_task, parent, false));
+        public TaskHolder(View itemView) {
+            super(itemView);
             itemView.setOnClickListener(this);
             mTaskName = itemView.findViewById(R.id.task_name_textview);
             mTaskDeadline = itemView.findViewById(R.id.task_deadline_textview);
+            mForegroundView = itemView.findViewById(R.id.foreground_task_block);
+            mBackgroundViewLeft = itemView.findViewById(R.id.background_swipe_left_task_block);
+            mBackgroundViewRight = itemView.findViewById(R.id.background_swipe_right_task_block);
         }
 
         public void bind(Task task) {
@@ -283,7 +302,11 @@ public class MainFragment extends Fragment {
             mTaskName.setText(task.getName());
             mTaskDeadline.setText(DateFormat.format("dd/MM/yyyy",task.getDeadline().getTime()));
             if (task.isOverdue()) {
-                itemView.setBackgroundColor(getResources().getColor(R.color.colorOverdue));
+                itemView.findViewById(R.id.foreground_task_block)
+                .setBackgroundColor(getResources().getColor(R.color.colorOverdue));
+            } else {
+                itemView.findViewById(R.id.foreground_task_block)
+                        .setBackgroundColor(Color.WHITE);
             }
         }
 
@@ -309,6 +332,8 @@ public class MainFragment extends Fragment {
     private class TaskAdaptor extends RecyclerView.Adapter<TaskHolder> {
 
         private List<Task> mTasks;
+        private Task mRecentlyDeletedItem;
+        private int mRecentlyDeletedItemPosition;
 
         public TaskAdaptor(List<Task> tasks) {
             mTasks = tasks;
@@ -318,7 +343,8 @@ public class MainFragment extends Fragment {
         @Override
         public TaskHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            return new TaskHolder(layoutInflater, parent);
+            View view = layoutInflater.inflate(R.layout.list_item_task, parent, false);
+            return new TaskHolder(view);
         }
 
         // To be kept efficient for faster loading as you scroll
@@ -326,6 +352,7 @@ public class MainFragment extends Fragment {
         public void onBindViewHolder(@NonNull TaskHolder holder, int position) {
             Task task = mTasks.get(position);
             holder.bind(task);
+            Log.d(TAG, task.toString());
         }
 
         @Override
@@ -335,6 +362,104 @@ public class MainFragment extends Fragment {
 
         public void updateList(List<Task> taskList) {
             mTasks = taskList;
+        }
+
+        public void deleteItem(int pos) {
+            mRecentlyDeletedItem = mTasks.remove(pos);
+            mRecentlyDeletedItemPosition = pos;
+            notifyItemRemoved(pos);
+            showUndoSnackbar();
+        }
+
+        private void showUndoSnackbar() {
+            View view = getActivity().findViewById(R.id.fragment_layout_coordinator);
+            Snackbar snackbar = Snackbar.make(view, "Deleted", Snackbar.LENGTH_LONG);
+            snackbar.setAction("undo", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    undoDelete();
+                }
+            });
+            snackbar.show();
+        }
+
+        private void undoDelete() {
+            mTasks.add(mRecentlyDeletedItemPosition, mRecentlyDeletedItem);
+            notifyItemInserted(mRecentlyDeletedItemPosition);
+        }
+    }
+
+    private class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
+
+        private TaskAdaptor mTaskAdaptor;
+
+        public SwipeToDeleteCallback(TaskAdaptor adapter) {
+            super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
+            mTaskAdaptor = adapter;
+        }
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            if(direction == ItemTouchHelper.LEFT) {
+                int position = viewHolder.getAdapterPosition();
+                mTaskAdaptor.deleteItem(position);
+            } else if(direction == ItemTouchHelper.RIGHT) {
+                mAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+            }
+        }
+
+        @Override
+        public void onChildDraw(@NonNull Canvas c,
+                                @NonNull RecyclerView recyclerView,
+                                @NonNull RecyclerView.ViewHolder viewHolder,
+                                float dX,
+                                float dY,
+                                int actionState,
+                                boolean isCurrentlyActive) {
+            final View foregroundView = ((TaskHolder) viewHolder).mForegroundView;
+            selectBackgroundView(viewHolder, dX);
+            getDefaultUIUtil().onDraw(c, recyclerView, foregroundView, dX, dY, actionState, isCurrentlyActive);
+        }
+
+        @Override
+        public void onChildDrawOver(@NonNull Canvas c, @NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            final View foregroundView = ((TaskHolder) viewHolder).mForegroundView;
+            getDefaultUIUtil().onDrawOver(c, recyclerView, foregroundView, dX, dY, actionState, isCurrentlyActive);
+        }
+
+        @Override
+        public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+           final View foregroundView = ((TaskHolder) viewHolder).mForegroundView;
+            getDefaultUIUtil().clearView(foregroundView);
+        }
+
+
+        @Override
+        public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+            if(viewHolder != null) {
+                final View foregroundView = ((TaskHolder) viewHolder).mForegroundView;
+                getDefaultUIUtil().onSelected(foregroundView);
+            }
+        }
+
+        private boolean isSwipeRight(float dX) {
+            return dX > 0;
+        }
+
+        private void selectBackgroundView(RecyclerView.ViewHolder viewHolder, float dX) {
+            TaskHolder taskHolder = (TaskHolder) viewHolder;
+            if(isSwipeRight((dX))) {
+                taskHolder.mBackgroundViewLeft.setVisibility(View.GONE);
+                taskHolder.mBackgroundViewRight.setVisibility(View.VISIBLE);
+            } else {
+                taskHolder.mBackgroundViewLeft.setVisibility(View.VISIBLE);
+                taskHolder.mBackgroundViewRight.setVisibility(View.GONE);
+            }
         }
     }
 
