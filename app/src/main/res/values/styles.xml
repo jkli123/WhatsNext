@@ -10,8 +10,8 @@
 
     <style name="ItemListBackgroundImage">
         <item name="android:scaleType">fitXY</item>
-        <item name="android:layout_width">@dimen/item_list_icon_width</item>
-        <item name="android:layout_height">@dimen/item_list_icon_height</item>
+        <item name="android:layout_width">@dimen/item_list_background_icon_width</item>
+        <item name="android:layout_height">@dimen/item_list_background_icon_height</item>
     </style>
 
     <style name="ItemListBackgroundText">

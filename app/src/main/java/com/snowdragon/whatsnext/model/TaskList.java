@@ -1,5 +1,8 @@
 package com.snowdragon.whatsnext.model;
 
+import android.content.pm.PackageManager;
+
+import java.security.acl.NotOwnerException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,6 +13,9 @@ import java.util.UUID;
 
 public class TaskList {
 
+    public static final int DONE_LIST = 0;
+    public static final int NOT_DONE_LIST = 1;
+
     private static final String TAG = "TaskList";
 
     private static List<Task> sTasks;
@@ -19,7 +25,6 @@ public class TaskList {
     private TaskList() {
         if(sIsFirst) {
             sIsFirst = !sIsFirst;
-//            populate(3);
         }
     }
 
@@ -31,44 +36,94 @@ public class TaskList {
         return new TaskList();
     }
 
-    public List<Task> getTasks() {
-        return sTasks;
-    }
-
-    public void setTasks(List<Task> tasks) {
-        sTasks = tasks;
-    }
-
-    public List<Task> getTasksDone() {
-        return sTasksDone;
-    }
-
-    public void setTasksDone(List<Task> tasksDone) { sTasksDone = tasksDone; }
-
-    public TaskList sort(Comparator<Task> taskComparator) {
-        List<Task> newTasks = new ArrayList<>();
-        newTasks.addAll(sTasks);
-        Collections.sort(newTasks, taskComparator);
-        sTasks = newTasks;
-
-        List<Task> newTasksDone = new ArrayList<>();
-        newTasksDone.addAll(sTasksDone);
-        Collections.sort(newTasksDone, taskComparator);
-        sTasksDone = newTasksDone;
-        return this;
-    }
-
-    public void add(Task task) {
-        if (task.getStatus() == Task.DONE) {
-            sTasksDone.add(task);
+    public List<Task> getTaskList(int type) {
+        if(type == DONE_LIST) {
+            return sTasksDone;
+        } else if(type == NOT_DONE_LIST) {
+            return sTasks;
         } else {
-            sTasks.add(task);
+            dispatchTypeException();
+            return null;
         }
     }
 
-    public Task read(String id) throws IllegalArgumentException {
-        if(id == null) {
-            throw new IllegalArgumentException("Task ID cannot be null");
+    public TaskList setTaskList(int type, List<Task> tasks) {
+        if(type == DONE_LIST) {
+            sTasksDone = tasks;
+        } else if(type == NOT_DONE_LIST) {
+            sTasks = tasks;
+        } else {
+            dispatchTypeException();
+        }
+        return this;
+    }
+
+    public TaskList sortTaskList(int type, Comparator<? super Task> taskComparator) {
+        if(type == DONE_LIST) {
+            Collections.sort(sTasksDone, taskComparator);
+        } else if(type == NOT_DONE_LIST) {
+            Collections.sort(sTasks, taskComparator);
+        } else {
+            dispatchTypeException();
+        }
+        return this;
+    }
+
+    public TaskList addTask(int type, Task task) {
+        if(type == DONE_LIST) {
+            if(task.getStatus() != Task.DONE) {
+                dispatchStatusException();
+            }
+            sTasksDone.add(task);
+        } else if(type == NOT_DONE_LIST) {
+            if(task.getStatus() == Task.DONE) {
+                dispatchStatusException();
+            }
+            sTasks.add(task);
+        } else {
+            dispatchTypeException();
+        }
+        return this;
+    }
+
+    public Task deleteTaskById(String taskId) {
+        Task task = read(taskId);
+        if(task.getStatus() == Task.DONE) {
+            sTasksDone.remove(task);
+        } else {
+            sTasks.remove(task);
+        }
+        return task;
+    }
+
+    public TaskList updateTask(String taskId, TaskChange taskChange) {
+        Task task = read(taskId);
+        taskChange.updateTask(task);
+        if(task.getStatus() == Task.DONE) {
+            deleteTaskById(taskId);
+            addTask(DONE_LIST, task);
+        } else {
+            deleteTaskById(taskId);
+            addTask(NOT_DONE_LIST, task);
+        }
+        return this;
+    }
+
+    private void dispatchTypeException() {
+        throw new IllegalArgumentException("Passed in type not held by TaskList");
+    }
+
+    private void dispatchStatusException() {
+        throw new IllegalStateException("Task status does not match with type of list operated on");
+    }
+
+    private void dispatchNullTypeException() {
+        throw new IllegalArgumentException("null value passed in");
+    }
+
+    private Task read(String id) throws IllegalArgumentException {
+        if (id == null) {
+            dispatchNullTypeException();
         }
         // Find Task by UUID
         Task target = null;
@@ -83,38 +138,4 @@ public class TaskList {
         }
         return target;
     }
-
-    public boolean update(String id, TaskChange taskChange) {
-        // Find Task by UUID
-        Task target = read(id);
-        boolean res = taskChange.updateTask(target);
-        if (target.getStatus() == Task.DONE) {
-            sTasks.remove(target);
-            sTasksDone.add(target);
-        }
-        return res;
-    }
-
-    public Task delete(String id) {
-         //Find Task by UUID
-        Task target = read(id);
-        sTasks.remove(target);
-        sTasksDone.remove(target);
-        return target;
-    }
-
-    public void populate(int taskCount) {
-        Random random = new Random();
-        for (int i = 1; i < taskCount + 1; i++) {
-            Task task = new Task();
-            task.setName("Task " + i);
-            task.setCategory(i % 2 == 0 ? Task.STUDY_CATEGORY : Task.WORK_CATEGORY);
-            task.setDescription("Description " + i);
-            task.setStatus(random.nextInt(4));
-            task.setDeadline(new Date());
-            task.setId(UUID.randomUUID().toString());
-            add(task);
-        }
-    }
-
 }

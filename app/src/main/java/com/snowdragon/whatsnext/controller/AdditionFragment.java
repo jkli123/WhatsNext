@@ -108,7 +108,7 @@ public class AdditionFragment extends AbstractStaticFragment {
                 task.setStatus(Task.getStatusIndexFromString(taskStatus.getText().toString()));
                 task.setId(UUID.randomUUID().toString());
 
-                TaskList.get().add(task);
+                TaskList.get().addTask(task.getStatus() == Task.DONE ? TaskList.DONE_LIST: TaskList.NOT_DONE_LIST, task);
                 if (task.getStatus() == Task.DONE) {
                     database.addTaskForUser(firebaseUser, task, Database.DONE_COLLECTION);
                 } else {
@@ -121,7 +121,7 @@ public class AdditionFragment extends AbstractStaticFragment {
                         .popBackStack();
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment_container, new MainFragment(), "MainFragment")
+                        .replace(R.id.fragment_container, TaskNotDoneFragment.newInstance(), "MainFragment")
                         .addToBackStack(null)
                         .commit();
             }

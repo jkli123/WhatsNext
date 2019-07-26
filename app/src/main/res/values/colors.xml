@@ -6,4 +6,6 @@
     <color name="colorOverdue">#ff6666</color>
     <color name="colorSwipeRightBackground">#4d94ff</color>
     <color name="colorSwipeLeftBackground">#ff3333</color>
+    <color name="colorItemListForeground">#ffffff</color>
+    <color name="colorItemListNotOverdueText">#808080</color>
 </resources>

@@ -31,6 +31,7 @@
     <string name="delete">Delete</string>
     <string name="not_done">Not Done</string>
     <string name="pause">Pause</string>
-    <string name="in_progress">In Progress</string>
+    <string name="in_progress_short_form">In Prog</string>
     <string name="done">Done</string>
+    <string name="on_hold">On Hold</string>
 </resources>

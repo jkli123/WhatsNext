@@ -417,4 +417,39 @@ public class Database {
         void onDelete(Task task);
         void onGet(List<Task> task);
     }
+
+    /**
+     * A simple implementation of database listener with no method bodies.
+     * <p>
+     *     This inner class implements the OnDatabaseStateChangeListener
+     *     interface with no method bodies so that users only need
+     *     to override the method that they need. Also it is recommended
+     *     to use this class as the interface listener may change
+     *     and developers will have to change their implementation
+     *     accordingly while this inner class will reflect those
+     *     changes and no break any development code.
+     * </p>
+     */
+    public static class SimpleOnDatabaseStateChangeListener implements OnDatabaseStateChangeListener {
+
+        @Override
+        public void onAdd(Task task) {
+
+        }
+
+        @Override
+        public void onUpdate(String taskId) {
+
+        }
+
+        @Override
+        public void onDelete(Task task) {
+
+        }
+
+        @Override
+        public void onGet(List<Task> task) {
+
+        }
+    }
 }

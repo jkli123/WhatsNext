@@ -13,130 +13,30 @@
         android:layout_height="@dimen/item_list_height"
         android:background="@color/colorSwipeRightBackground">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/item_list_quarter_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.25" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/item_list_half_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/item_list_three_quarter_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.75" />
-
         <ImageView
-            android:id="@+id/item_list_task_not_done_image"
-            style="@style/ItemListBackgroundImage"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_not_done_white_24dp"
-            app:layout_constraintBottom_toTopOf="@id/item_list_task_not_done_text"
-            app:layout_constraintEnd_toStartOf="@+id/item_list_quarter_guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"/>
-
-        <TextView
-            android:id="@+id/item_list_task_not_done_text"
-            style="@style/ItemListBackgroundText"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="@string/not_done"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/item_list_quarter_guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/item_list_task_not_done_image" />
-
-        <ImageView
-            android:id="@+id/item_list_task_pause_image"
-            style="@style/ItemListBackgroundImage"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_pause_white_24dp"
-            app:layout_constraintBottom_toTopOf="@+id/item_list_task_pause_text"
-            app:layout_constraintEnd_toStartOf="@+id/item_list_half_guideline"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="@+id/item_list_quarter_guideline"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-        <TextView
-            android:id="@+id/item_list_task_pause_text"
-            style="@style/ItemListBackgroundText"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/pause"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/item_list_half_guideline"
-            app:layout_constraintHorizontal_bias="0.511"
-            app:layout_constraintStart_toStartOf="@+id/item_list_quarter_guideline"
-            app:layout_constraintTop_toBottomOf="@id/item_list_task_pause_image"
-            app:layout_constraintVertical_bias="0.6" />
-
-        <ImageView
-            android:id="@+id/item_list_task_in_progress_image"
-            style="@style/ItemListBackgroundImage"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_in_progress_white_24dp"
-            app:layout_constraintBottom_toTopOf="@id/item_list_task_in_progress_text"
-            app:layout_constraintEnd_toStartOf="@+id/item_list_three_quarter_guideline"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="@+id/item_list_half_guideline"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-        <TextView
-            android:id="@+id/item_list_task_in_progress_text"
-            style="@style/ItemListBackgroundText"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/in_progress"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/item_list_three_quarter_guideline"
-            app:layout_constraintStart_toStartOf="@+id/item_list_half_guideline"
-            app:layout_constraintTop_toBottomOf="@id/item_list_task_in_progress_image" />
-
-        <ImageView
-            android:id="@+id/item_list_task_done_image"
-            style="@style/ItemListBackgroundImage"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_width="@dimen/item_list_background_icon_width"
+            android:layout_height="@dimen/item_list_background_icon_height"
+            android:id="@+id/ic_right_background_done"
+            android:scaleType="fitXY"
             android:src="@drawable/ic_done_white_24dp"
-            app:layout_constraintBottom_toTopOf="@id/item_list_task_done_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="@+id/item_list_three_quarter_guideline"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintBottom_toTopOf="@id/right_background_text"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
 
         <TextView
-            android:id="@+id/item_list_task_done_text"
-            style="@style/ItemListBackgroundText"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/right_background_text"
             android:text="@string/done"
+            android:textSize="20sp"
+            android:textColor="#FFFFFF"
+            app:layout_constraintTop_toBottomOf="@id/ic_right_background_done"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toStartOf="@+id/item_list_three_quarter_guideline"
-            app:layout_constraintTop_toBottomOf="@id/item_list_task_done_image" />
+            app:layout_constraintVertical_chainStyle="packed" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -150,8 +50,8 @@
         app:layout_constraintRight_toRightOf="parent">
 
     <ImageView
-        android:layout_width="@dimen/item_list_icon_width"
-        android:layout_height="@dimen/item_list_icon_height"
+        android:layout_width="@dimen/item_list_background_icon_width"
+        android:layout_height="@dimen/item_list_background_icon_height"
         android:id="@+id/ic_background_delete"
         android:scaleType="fitXY"
         android:src="@drawable/ic_delete_white_24dp"
@@ -177,36 +77,73 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/item_list_height"
-        android:id="@+id/foreground_task_block">
+        android:id="@+id/foreground_task_block"
+        android:background="@color/colorItemListForeground">
 
-    <TextView
-        android:id="@+id/task_name_textview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:textSize="36sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:ellipsize="end"
-        android:maxLines="2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/task_deadline_textview"
-        tools:text="A very long three liner Task Name" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/foreground_90_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9"/>
 
-    <TextView
-        android:id="@+id/task_deadline_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/task_name_textview"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="Task Deadline" />
+        <TextView
+            android:id="@+id/task_name_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/foreground_90_guideline"
+            app:layout_constraintBottom_toBottomOf="@id/task_deadline_textview"
+            app:layout_constraintHorizontal_bias="0"
+            tools:text="A very long three liner Task Name" />
+
+        <TextView
+            android:id="@+id/task_deadline_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/task_name_textview"
+            app:layout_constraintEnd_toStartOf="@id/foreground_90_guideline"
+            app:layout_constraintHorizontal_bias="0"
+            tools:text="Task Deadline" />
+
+        <ImageView
+            android:id="@+id/task_status_icon"
+            android:layout_width="@dimen/item_list_foreground_icon_width"
+            android:layout_height="@dimen/item_list_foreground_icon_height"
+            android:layout_margin="8dp"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toTopOf="@id/task_status_text"
+            app:layout_constraintLeft_toRightOf="@id/foreground_90_guideline"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:src="@drawable/ic_not_done_160px" />
+
+        <TextView
+            android:id="@+id/task_status_text"
+            android:layout_width="@dimen/item_list_foreground_icon_width"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintTop_toBottomOf="@id/task_status_icon"
+            app:layout_constraintLeft_toRightOf="@id/foreground_90_guideline"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="13sp"
+            tools:text="Not done"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

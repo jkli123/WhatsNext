@@ -76,8 +76,6 @@ public class DetailFragment extends AbstractStaticFragment {
         taskDeadline.setText(DateFormat.format("dd/MM/yyyy",mTask.getDeadline()));
         taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
 
-
-
         // Assigning taskDeadline TextView to open a DatePickerDialog to select date when clicked on
         mTaskDeadlineValue.setTime(mTask.getDeadline());
         final DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
@@ -128,7 +126,7 @@ public class DetailFragment extends AbstractStaticFragment {
             @Override
             public void onClick(View v) {
                 TaskChange taskChange = mTaskChangeBuilder.build();
-                TaskList.get().update(mTask.getId(), taskChange);
+                TaskList.get().updateTask(mTask.getId(), taskChange);
                 if (mTask.getStatus() == Task.DONE) {
                     mDatabase.deleteTaskForUser(mFirebaseUser, mTask, Database.TASK_COLLECTION);
                     mDatabase.addTaskForUser(mFirebaseUser, mTask, Database.DONE_COLLECTION);
@@ -147,7 +145,7 @@ public class DetailFragment extends AbstractStaticFragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TaskList.get().delete(mTask.getId());
+                TaskList.get().deleteTaskById(mTask.getId());
                 mDatabase.deleteTaskForUser(mFirebaseUser, mTask, Database.TASK_COLLECTION);
                 mDatabase.deleteTaskForUser(mFirebaseUser, mTask, Database.DONE_COLLECTION);
                 returnToMainFragment();
@@ -165,7 +163,7 @@ public class DetailFragment extends AbstractStaticFragment {
                 .popBackStack();
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new MainFragment(), "MainFragment")
+                .replace(R.id.fragment_container, TaskNotDoneFragment.newInstance(), "MainFragment")
                 .addToBackStack(null)
                 .commit();
     }
@@ -186,30 +184,28 @@ public class DetailFragment extends AbstractStaticFragment {
 
         @Override
         public void afterTextChanged(Editable s) {
-            if (mTask.getStatus() == Task.NOT_DONE) {
-                mUpdateButton.setEnabled(true);
-                String updatedValue = s.toString();
-                switch (mField) {
-                    case Task.NAME:
-                        mTaskChangeBuilder.updateName(updatedValue);
-                        break;
+            mUpdateButton.setEnabled(true);
+            String updatedValue = s.toString();
+            switch (mField) {
+                case Task.NAME:
+                    mTaskChangeBuilder.updateName(updatedValue);
+                    break;
 
-                    case Task.CATEGORY:
-                        mTaskChangeBuilder.updateCategory(updatedValue);
-                        break;
+                case Task.CATEGORY:
+                    mTaskChangeBuilder.updateCategory(updatedValue);
+                    break;
 
-                    case Task.DESCRIPTION:
-                        mTaskChangeBuilder.updateDescription(updatedValue);
-                        break;
+                case Task.DESCRIPTION:
+                    mTaskChangeBuilder.updateDescription(updatedValue);
+                    break;
 
-                    case Task.STATUS:
-                        mTaskChangeBuilder.updateStatus(Task.getStatusIndexFromString(updatedValue));
-                        break;
+                case Task.STATUS:
+                    mTaskChangeBuilder.updateStatus(Task.getStatusIndexFromString(updatedValue));
+                    break;
 
-                    case Task.DEADLINE:
-                        mTaskChangeBuilder.updateDeadline(mTaskDeadlineValue.getTime());
-                        break;
-                }
+                case Task.DEADLINE:
+                    mTaskChangeBuilder.updateDeadline(mTaskDeadlineValue.getTime());
+                    break;
             }
 
         }

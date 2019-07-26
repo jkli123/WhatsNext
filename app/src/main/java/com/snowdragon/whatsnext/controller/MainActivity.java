@@ -19,6 +19,11 @@ import com.google.android.material.navigation.NavigationView;
 import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.debug.DebugFragment;
 
+//TODO sort the tasks when they come out of the database. no order when they are set for now.
+//TODO consider refactoring out TaskList's sort method, currently it sorts multiple lists and the name of the method does not convey the intention of code
+//TODO consider refactoring our sSortField and mTaskComparator variable out of this class. They make code hard to follow.
+//TODO as per the first TODO, refactoring the done list should get rid of the methods dealing with swapping of the lists.
+//TODO change status when swiping right activates the background view, handle clicks on the image views.
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -105,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 boolean isSuccessful = false;
                 switch(menuItem.getItemId()) {
                     case R.id.main_home_menu:
-                        Fragment fragment = MainFragment.getInstance();
+                        Fragment fragment = TaskNotDoneFragment.newInstance();
                         getSupportFragmentManager()
                                 .beginTransaction()
                                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -129,13 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void runMainFragment() {
         FragmentManager fm = getSupportFragmentManager();
-        Fragment mainFragment = MainFragment.getInstance().setSignOutListener(
-                new MainFragment.SignOutListener() {
-                    @Override
-                    public void onSignOut() {
-                        runSignIn();
-                    }
-                });
+        Fragment mainFragment = TaskNotDoneFragment.newInstance();
         fm.beginTransaction()
                 .replace(R.id.fragment_container, mainFragment)
                 .commit();
