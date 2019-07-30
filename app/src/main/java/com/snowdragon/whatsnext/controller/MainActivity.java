@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,9 +20,10 @@ import com.google.android.material.navigation.NavigationView;
 import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.debug.DebugFragment;
 
-//TODO detail fragment if you switch from not done task to done, the task remains in the list.
-//TODO same for from done to some other not done status
-//TODO FAB for addition of tasks
+//TODO faded line above buttons in detail fragment to distinguish between teh buttons and edit text
+//TODO change colour of the text to not be black in detail fragment's buttons
+//TODO change detail fragment status chooser to be a dropdown selector
+//TODO addition fragment button also nid change to be same as detail fragment's button
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initAppBar();
+        initFab();
         auth = Auth.getInstance();
 
         if(isDebugRun) {
@@ -129,10 +132,33 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initFab() {
+        findViewById(R.id.floating_add_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runAdditionFragment();
+            }
+        });
+    }
+
+    private void runAdditionFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment additionFragment = AdditionFragment.newInstance();
+        int fadeInAnimation = android.R.anim.fade_in;
+        int fadeOutAnimation = android.R.anim.fade_out;
+        fm.beginTransaction()
+                .setCustomAnimations(fadeInAnimation, fadeOutAnimation,
+                        fadeInAnimation, fadeOutAnimation)
+                .replace(R.id.fragment_container, additionFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
     private void runSplashFragment() {
         FragmentManager fm = getSupportFragmentManager();
         Fragment splashFragment = SplashFragment.newInstance();
         fm.beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .replace(R.id.fragment_container, splashFragment)
                 .commit();
     }

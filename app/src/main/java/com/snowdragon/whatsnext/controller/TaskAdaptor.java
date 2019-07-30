@@ -1,7 +1,6 @@
 package com.snowdragon.whatsnext.controller;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateFormat;
@@ -30,14 +29,14 @@ import java.util.List;
 
 public class TaskAdaptor extends RecyclerView.Adapter<TaskAdaptor.TaskViewHolder> {
 
-    public static final int DONE_ADAPTOR = 0;
-    public static final int NOT_DONE_ADAPTOR = 1;
+    static final int DONE_ADAPTOR = 0;
+    static final int NOT_DONE_ADAPTOR = 1;
 
     private static final String TAG = "TaskAdaptor";
     private static final String DELETE_FROM_DATABASE_COMMAND = "delete";
     private static final String ADD_TO_DATABASE_COMMAND = "add";
-    private static final String TRANFER_FROM_DONE_TO_NOT_DONE_DATABASE_COMMAND = "trfdonetonotdone";
-    private static final String TRANFER_FROM_NOT_DONE_TO_DONE_DATABASE_COMMAND = "trfnotdonetodone";
+    private static final String TRANSFER_FROM_DONE_TO_NOT_DONE_DATABASE_COMMAND = "trfdonetonotdone";
+    private static final String TRANSFER_FROM_NOT_DONE_TO_DONE_DATABASE_COMMAND = "trfnotdonetodone";
 
     private Database mDatabase;
     private FirebaseUser mUser;
@@ -69,6 +68,8 @@ public class TaskAdaptor extends RecyclerView.Adapter<TaskAdaptor.TaskViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull TaskAdaptor.TaskViewHolder holder, int position) {
+         Log.d(TAG, "Task List: " + mTasks);
+         Log.d(TAG, "Singleton task list: " + TaskList.get().getTaskList(TaskList.NOT_DONE_LIST));
         Task task = mTasks.get(position);
         holder.bind(task);
     }
@@ -100,9 +101,8 @@ public class TaskAdaptor extends RecyclerView.Adapter<TaskAdaptor.TaskViewHolder
 
          updateTaskStatusToDone();
 
-         mTasks.remove(pos);
          notifyItemRemoved(pos);
-         mInvoker.execute(TRANFER_FROM_NOT_DONE_TO_DONE_DATABASE_COMMAND);
+         mInvoker.execute(TRANSFER_FROM_NOT_DONE_TO_DONE_DATABASE_COMMAND);
 
          showUndoSnackbar("Task Done", new View.OnClickListener() {
             @Override
@@ -110,7 +110,7 @@ public class TaskAdaptor extends RecyclerView.Adapter<TaskAdaptor.TaskViewHolder
                 updateTaskStatusToPreviousStatus();
                 transferFromDoneListToNotDoneList();
                 notifyItemInserted(mRecentlyDeletedItemPosition);
-                mInvoker.execute(TRANFER_FROM_DONE_TO_NOT_DONE_DATABASE_COMMAND);
+                mInvoker.execute(TRANSFER_FROM_DONE_TO_NOT_DONE_DATABASE_COMMAND);
             }
         });
     }
@@ -137,11 +137,11 @@ public class TaskAdaptor extends RecyclerView.Adapter<TaskAdaptor.TaskViewHolder
     }
 
     private void updateTaskStatusToPreviousStatus() {
-        new TaskChange
+        TaskChange change = new TaskChange
                 .Builder()
                 .updateStatus(mRecentlyDeletedItemState)
-                .build()
-                .updateTask(mRecentlyDeletedItem);
+                .build();
+        TaskList.get().updateTask(mRecentlyDeletedItem.getId(), change);
     }
 
     private void transferFromDoneListToNotDoneList() {
@@ -172,7 +172,7 @@ public class TaskAdaptor extends RecyclerView.Adapter<TaskAdaptor.TaskViewHolder
                                 : Database.TASK_COLLECTION);
             }
         });
-        mInvoker.register(TRANFER_FROM_DONE_TO_NOT_DONE_DATABASE_COMMAND, new Command() {
+        mInvoker.register(TRANSFER_FROM_DONE_TO_NOT_DONE_DATABASE_COMMAND, new Command() {
             @Override
             public void execute() {
                 mDatabase.deleteTaskForUser(mUser,
@@ -183,7 +183,7 @@ public class TaskAdaptor extends RecyclerView.Adapter<TaskAdaptor.TaskViewHolder
                         Database.TASK_COLLECTION);
             }
         });
-        mInvoker.register(TRANFER_FROM_NOT_DONE_TO_DONE_DATABASE_COMMAND, new Command() {
+        mInvoker.register(TRANSFER_FROM_NOT_DONE_TO_DONE_DATABASE_COMMAND, new Command() {
             @Override
             public void execute() {
                 mDatabase.deleteTaskForUser(mUser,
@@ -245,10 +245,13 @@ public class TaskAdaptor extends RecyclerView.Adapter<TaskAdaptor.TaskViewHolder
         public void onClick(View v) {
             Log.d(TAG, "Clicked on view holder");
             if(mActivity instanceof AppCompatActivity) {
+                int fadeIn = android.R.anim.fade_in;
+                int fadeOut = android.R.anim.fade_out;
                 Log.d(TAG, "Clicked on, changing fragment");
                 AppCompatActivity activity = (AppCompatActivity) mActivity;
                 activity.getSupportFragmentManager()
                         .beginTransaction()
+                        .setCustomAnimations(fadeIn, fadeOut, fadeIn, fadeOut)
                         .replace(
                                 R.id.fragment_container,
                                 DetailFragment.newInstance(mTask),

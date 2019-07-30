@@ -41,6 +41,4 @@ public class TaskDoneFragment extends AbstractScrollableTaskFragment {
                 .register("" + R.id.menu_show_tasks_not_done,
                         START_TASK_NOT_DONE_FRAGMENT_COMMAND);
     }
-
-
 }

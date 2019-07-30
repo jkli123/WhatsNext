@@ -123,8 +123,6 @@ public class Task implements Serializable {
                 d.get(Calendar.DAY_OF_MONTH),
                 0, 0, 0);
         d.set(Calendar.MILLISECOND, 0);
-        //Extra buffer of one day
-        d.roll(Calendar.DAY_OF_MONTH, 1);
         Calendar today = Calendar.getInstance();
         today.set(today.get(Calendar.YEAR),
                 today.get(Calendar.MONTH),

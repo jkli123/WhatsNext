@@ -70,16 +70,19 @@ public class TaskList {
     }
 
     public TaskList addTask(int type, Task task) {
+        TaskComparatorFactory factory = new TaskComparatorFactory();
         if(type == DONE_LIST) {
             if(task.getStatus() != Task.DONE) {
                 dispatchStatusException();
             }
             sTasksDone.add(task);
+            Collections.sort(sTasksDone, factory.getDeadlineComparator());
         } else if(type == NOT_DONE_LIST) {
             if(task.getStatus() == Task.DONE) {
                 dispatchStatusException();
             }
             sTasks.add(task);
+            Collections.sort(sTasks, factory.getDeadlineComparator());
         } else {
             dispatchTypeException();
         }
@@ -97,13 +100,11 @@ public class TaskList {
     }
 
     public TaskList updateTask(String taskId, TaskChange taskChange) {
-        Task task = read(taskId);
+        Task task = deleteTaskById(taskId);
         taskChange.updateTask(task);
         if(task.getStatus() == Task.DONE) {
-            deleteTaskById(taskId);
             addTask(DONE_LIST, task);
         } else {
-            deleteTaskById(taskId);
             addTask(NOT_DONE_LIST, task);
         }
         return this;

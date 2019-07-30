@@ -22,6 +22,7 @@ import com.snowdragon.whatsnext.database.Database;
 import com.snowdragon.whatsnext.model.Task;
 import com.snowdragon.whatsnext.model.TaskChange;
 import com.snowdragon.whatsnext.model.TaskList;
+import com.snowdragon.whatsnext.patterns.Invoker;
 
 import java.util.Calendar;
 
@@ -125,15 +126,24 @@ public class DetailFragment extends AbstractStaticFragment {
             @Override
             public void onClick(View v) {
                 TaskChange taskChange = mTaskChangeBuilder.build();
+                int oldStatus = mTask.getStatus();
                 TaskList.get().updateTask(mTask.getId(), taskChange);
-                if (mTask.getStatus() == Task.DONE) {
+                int newStatus = mTask.getStatus();
+                if (oldStatus != Task.DONE && newStatus == Task.DONE) {
+                    //Shift from not done list to done list
                     mDatabase.deleteTaskForUser(mFirebaseUser, mTask, Database.TASK_COLLECTION);
                     mDatabase.addTaskForUser(mFirebaseUser, mTask, Database.DONE_COLLECTION);
+                } else if(oldStatus == Task.DONE && newStatus != Task.DONE) {
+                    //Shift from done to not done list
+                    mDatabase.deleteTaskForUser(mFirebaseUser, mTask, Database.DONE_COLLECTION);
+                    mDatabase.addTaskForUser(mFirebaseUser, mTask, Database.TASK_COLLECTION);
                 } else {
                     mDatabase.updateTaskForUser(mFirebaseUser,
                             mTask.getId(),
                             taskChange,
-                            Database.TASK_COLLECTION);
+                            newStatus == Task.DONE
+                                    ? Database.DONE_COLLECTION
+                                    : Database.TASK_COLLECTION);
                 }
                 returnToPreviousFragment();
             }

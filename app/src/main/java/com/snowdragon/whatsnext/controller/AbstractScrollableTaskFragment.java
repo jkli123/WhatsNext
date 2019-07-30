@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseUser;
 import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.database.Database;
@@ -35,21 +36,21 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
      final Command ADD_TASK_MENU_COMMAND = new Command() {
         @Override
         public void execute() {
-            AbstractScrollableTaskFragment.this.runFragment(null, AdditionFragment.newInstance());
+            AbstractScrollableTaskFragment.this.runFragment(true, AdditionFragment.newInstance());
         }
     };
 
      final Command START_TASK_DONE_FRAGMENT_COMMAND = new Command() {
          @Override
          public void execute() {
-             AbstractScrollableTaskFragment.this.runFragment(null, TaskDoneFragment.newInstance());
+             AbstractScrollableTaskFragment.this.runFragment(false, TaskDoneFragment.newInstance());
          }
      };
 
      final Command START_TASK_NOT_DONE_FRAGMENT_COMMAND = new Command() {
          @Override
          public void execute() {
-             AbstractScrollableTaskFragment.this.runFragment(null, TaskNotDoneFragment.newInstance());
+             AbstractScrollableTaskFragment.this.runFragment(false, TaskNotDoneFragment.newInstance());
          }
      };
 
@@ -87,7 +88,7 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
     TaskAdaptor mTaskAdaptor;
     TaskList mTaskList = TaskList.get();
 
-    private TaskComparatorFactory mComparatorFactory = TaskComparatorFactory.get();
+    private TaskComparatorFactory mComparatorFactory = new TaskComparatorFactory();
 
     abstract void setVisibleMenuOptions(Menu menu);
     abstract List<Task> getAdaptorTaskList();
@@ -118,6 +119,8 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.floating_add_button);
+        floatingActionButton.show();
 
         initRecyclerView(view);
 
@@ -127,15 +130,14 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d(TAG, "Fragment resumed");
         if(mTaskAdaptor != null) {
             mTaskAdaptor.notifyDataSetChanged();
+            Log.d(TAG, "Adaptor notified of data set changed");
             resumeRecyclerView();
         }
     }
 
     void registerCommonInvokerCommands() {
-        mInvoker.register("" + R.id.menu_add_task_item, ADD_TASK_MENU_COMMAND);
         mInvoker.register("" + R.id.menu_sort_item, Invoker.EMPTY_COMMAND);
         mInvoker.register("" + R.id.menu_sort_by_cat_item, SORT_BY_CATEGORY_COMMAND);
         mInvoker.register("" + R.id.menu_sort_by_name_item, SORT_BY_NAME_COMMAND);
@@ -186,12 +188,18 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
         mTaskAdaptor.notifyDataSetChanged();
     }
 
-    private void runFragment(String backStack, Fragment fragment) {
-        getActivity().getSupportFragmentManager()
+    private void runFragment(boolean isBackStack, Fragment fragment) {
+        int fadeIn = android.R.anim.fade_in;
+        int fadeOut = android.R.anim.fade_out;
+        FragmentTransaction transaction = getActivity()
+                .getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .addToBackStack(backStack)
-                .commit();
+                .setCustomAnimations(fadeIn, fadeOut, fadeIn, fadeOut)
+                .replace(R.id.fragment_container, fragment);
+        if(isBackStack) {
+            transaction.addToBackStack(null).commit();
+        } else {
+            transaction.commit();
+        }
     }
 }

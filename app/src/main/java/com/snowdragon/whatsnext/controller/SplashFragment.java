@@ -14,11 +14,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.database.Database;
 import com.snowdragon.whatsnext.model.Task;
+import com.snowdragon.whatsnext.model.TaskComparatorFactory;
 import com.snowdragon.whatsnext.model.TaskList;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class SplashFragment extends AbstractStaticFragment {
@@ -43,6 +46,7 @@ public class SplashFragment extends AbstractStaticFragment {
         mListener = new OnAllBackgroundActivityCompleteListener() {
             @Override
             public void onAllBackgroundActivityComplete() {
+                sortTaskLists();
                 finishSplashScreen();
             }
         };
@@ -58,6 +62,7 @@ public class SplashFragment extends AbstractStaticFragment {
         mAppBarLayout = getActivity().findViewById(R.id.appbar_layout);
 
         hideAppbar();
+        hideFab();
 
         return view;
     }
@@ -92,6 +97,11 @@ public class SplashFragment extends AbstractStaticFragment {
         mAppBarLayout.setExpanded(false);
     }
 
+    private void hideFab() {
+        FloatingActionButton button = getActivity().findViewById(R.id.floating_add_button);
+        button.hide();
+    }
+
     private void initUserData() {
         mDatabase.setOnDatabaseStateChangeListener(new Database.SimpleOnDatabaseStateChangeListener() {
 
@@ -120,6 +130,13 @@ public class SplashFragment extends AbstractStaticFragment {
     private void finishSplashScreen() {
         Log.d(TAG, "All background tasks finished. Animating");
         runScreenFinishAnimation();
+    }
+
+    private void sortTaskLists() {
+        TaskComparatorFactory factory = new TaskComparatorFactory();
+        Comparator<Task> deadlineComp = factory.getDeadlineComparator();
+        TaskList.get().sortTaskList(TaskList.NOT_DONE_LIST, deadlineComp);
+        TaskList.get().sortTaskList(TaskList.DONE_LIST, deadlineComp);
     }
 
     private void informAllBackgroundActivityCompleteListener() {

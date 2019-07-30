@@ -5,11 +5,7 @@ import java.util.Date;
 
 public class TaskComparatorFactory {
 
-    private TaskComparatorFactory() {}
-
-    public static TaskComparatorFactory get() {
-        return new TaskComparatorFactory();
-    }
+    public TaskComparatorFactory() {}
 
     public Comparator<Task> getNameComparator() {
         return new Comparator<Task>() {

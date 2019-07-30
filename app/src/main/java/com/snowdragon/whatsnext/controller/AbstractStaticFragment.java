@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Objects;
 
@@ -39,6 +40,8 @@ public abstract class AbstractStaticFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         AppBarLayout layout = Objects.requireNonNull(getActivity()).findViewById(R.id.appbar_layout);
+        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.floating_add_button);
+        floatingActionButton.hide();
         layout.setExpanded(true, true);
 
         return super.onCreateView(inflater, container, savedInstanceState);
