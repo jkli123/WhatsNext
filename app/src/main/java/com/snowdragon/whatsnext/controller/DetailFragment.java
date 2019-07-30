@@ -49,7 +49,6 @@ public class DetailFragment extends AbstractStaticFragment {
         return fragment;
     }
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -136,7 +135,7 @@ public class DetailFragment extends AbstractStaticFragment {
                             taskChange,
                             Database.TASK_COLLECTION);
                 }
-                returnToMainFragment();
+                returnToPreviousFragment();
             }
         });
         mUpdateButton.setEnabled(false);
@@ -148,24 +147,17 @@ public class DetailFragment extends AbstractStaticFragment {
                 TaskList.get().deleteTaskById(mTask.getId());
                 mDatabase.deleteTaskForUser(mFirebaseUser, mTask, Database.TASK_COLLECTION);
                 mDatabase.deleteTaskForUser(mFirebaseUser, mTask, Database.DONE_COLLECTION);
-                returnToMainFragment();
+                returnToPreviousFragment();
             }
         });
 
         return view;
     }
 
-    /*
-     * Replaces the current AdditionFragment with the MainFragment.
-     */
-    private void returnToMainFragment() {
+    //Return to whichever fragment called this fragment
+    private void returnToPreviousFragment() {
         getActivity().getSupportFragmentManager()
                 .popBackStack();
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, TaskNotDoneFragment.newInstance(), "MainFragment")
-                .addToBackStack(null)
-                .commit();
     }
 
     private class ViewTextWatcher implements TextWatcher {

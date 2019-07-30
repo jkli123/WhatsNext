@@ -27,7 +27,7 @@ class DebugDatabaseListener implements Database.OnDatabaseStateChangeListener {
     }
 
     @Override
-    public void onGet(List<Task> task) {
+    public void onGet(int type, List<Task> task) {
         Log.d(TAG, "Informed of get event. retrieved: " + task.toString());
     }
 }

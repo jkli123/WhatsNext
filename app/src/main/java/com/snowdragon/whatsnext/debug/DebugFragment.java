@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.snowdragon.whatsnext.controller.R;
+import com.snowdragon.whatsnext.controller.SplashFragment;
 import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.database.Database;
 import com.snowdragon.whatsnext.model.Task;
@@ -68,19 +69,23 @@ public class DebugFragment extends Fragment {
     }
 
     private void initDebugMode() {
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, SplashFragment.newInstance())
+                .commit();
         //Put any code you wish to debug here. Log to Logcat or display on screen.
-        this.setOnSignInCompleteListener(new OnSignInCompleteListener() {
-            @Override
-            public void onSignIn(FirebaseUser user) {
+//        this.setOnSignInCompleteListener(new OnSignInCompleteListener() {
+//            @Override
+//            public void onSignIn(FirebaseUser user) {
                 //Put code you wish to test here with current user.
 //                addTaskWithDebugTaskAndUserAddsSuccessfullyToDatabase(user);
 //                getAllTaskForUserReturnsAllTasksInDatabase(user);
 //                updateDummyTaskWithNewNameSuccessfullyUpdatesDatabase();
 //                deleteDummyTaskForUserSuccessfullyDeletesTask();
-            }
-        });
-        mDb.setOnDatabaseStateChangeListener(mListener);
-        signUserIn();
+//            }
+//        });
+//        mDb.setOnDatabaseStateChangeListener(mListener);
+//        signUserIn();
     }
 
     private void updateDummyTaskWithNewNameSuccessfullyUpdatesDatabase() {

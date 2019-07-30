@@ -1,6 +1,7 @@
 package com.snowdragon.whatsnext.controller;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +28,7 @@ import com.snowdragon.whatsnext.patterns.Command;
 import com.snowdragon.whatsnext.patterns.Invoker;
 
 import java.util.Comparator;
+import java.util.List;
 
 public abstract class AbstractScrollableTaskFragment extends Fragment {
 
@@ -78,7 +80,7 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
         }
     };
 
-    private static final String TAG = "AbstractScrollableTaskFragment";
+    private static final String TAG = "AScrollableTaskFragment";
 
     Invoker mInvoker = new Invoker();
     RecyclerView mTaskRecyclerView;
@@ -88,9 +90,9 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
     private TaskComparatorFactory mComparatorFactory = TaskComparatorFactory.get();
 
     abstract void setVisibleMenuOptions(Menu menu);
-    abstract Database.OnDatabaseStateChangeListener initDatabaseRetrievalListener();
+    abstract List<Task> getAdaptorTaskList();
+    abstract int getAdaptorType();
     abstract void registerInvokerCommands();
-    abstract String getDatabaseCollectionPath();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -118,9 +120,18 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         initRecyclerView(view);
-        initUserData();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "Fragment resumed");
+        if(mTaskAdaptor != null) {
+            mTaskAdaptor.notifyDataSetChanged();
+            resumeRecyclerView();
+        }
     }
 
     void registerCommonInvokerCommands() {
@@ -150,14 +161,16 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
         DividerItemDecoration dividerItemDecoration
                 = new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL);
         mTaskRecyclerView.addItemDecoration(dividerItemDecoration);
+        mTaskAdaptor = new TaskAdaptor(
+                getActivity(),
+                getAdaptorTaskList(),
+                getAdaptorType());
+        mTaskRecyclerView.setAdapter(mTaskAdaptor);
+        attachSwipeForActionCallback();
     }
 
-    private void initUserData() {
-        Database database = Database.getInstance(getActivity());
-        FirebaseUser user = Auth.getInstance().getCurrentUser();
-        database
-                .setOnDatabaseStateChangeListener(initDatabaseRetrievalListener())
-                .getAllTaskForUser(user, getDatabaseCollectionPath());
+    private void resumeRecyclerView() {
+        attachSwipeForActionCallback();
     }
 
     private int verifyAdaptorType() {

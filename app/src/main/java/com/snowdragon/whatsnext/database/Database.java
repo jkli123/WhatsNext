@@ -11,6 +11,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.snowdragon.whatsnext.model.Task;
 import com.snowdragon.whatsnext.model.TaskChange;
+import com.snowdragon.whatsnext.model.TaskList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,8 @@ public class Database {
     private static final String USERS_COLLECTION = "/users";
 
     private static final int ADD_EVENT = 0;
-    private static final int GET_EVENT = 1;
+    private static final int GET_DONE_LIST_EVENT = 1;
+    private static final int GET_NOT_DONE_LIST_EVENT = 4;
     private static final int UPDATE_EVENT = 2;
     private static final int DELETE_EVENT = 3;
 
@@ -166,7 +168,7 @@ public class Database {
         if(validateUser(user)) {
             String path = constructUsersDatabasePath(
                     DEV_PATH, "/" + user.getUid(), userCollection);
-            return getAllTaskByPath(path);
+            return getAllTaskByPath(path, userCollection);
         } else {
             throw new IllegalArgumentException("Unable to get null user");
         }
@@ -282,7 +284,7 @@ public class Database {
      * @param path The collection path belonging to the user
      * @return An instance of this database.
      */
-    private Database getAllTaskByPath(String path) {
+    private Database getAllTaskByPath(String path, final String userCollection) {
         final List<Task> result = new ArrayList<>();
         mFirestore.collection(path)
                 .get()
@@ -292,7 +294,11 @@ public class Database {
                         for(QueryDocumentSnapshot r : task.getResult()) {
                             result.add(r.toObject(Task.class));
                         }
-                        informListener(GET_EVENT, result);
+                        if(userCollection.equals(Database.DONE_COLLECTION)) {
+                            informListener(GET_DONE_LIST_EVENT, result);
+                        } else if(userCollection.equals(Database.TASK_COLLECTION)) {
+                            informListener(GET_NOT_DONE_LIST_EVENT, result);
+                        }
                     }
                 });
         return this;
@@ -324,7 +330,7 @@ public class Database {
                 mLogger.logAddMessage(task.getId());
                 mStateChangeListener.onAdd(task);
                 break;
-            case GET_EVENT :
+            case GET_DONE_LIST_EVENT :
                 /*
                  * Do ensure that payload being passed into this method is
                  * of type List<Task>. Due to java's erasure of types,
@@ -336,7 +342,13 @@ public class Database {
                 //noinspection unchecked
                 mLogger.logGetMessage((List<Task>) payload);
                 //noinspection unchecked
-                mStateChangeListener.onGet((List<Task>) payload);
+                mStateChangeListener.onGet(TaskList.DONE_LIST, (List<Task>) payload);
+                break;
+            case GET_NOT_DONE_LIST_EVENT :
+                //noinspection unchecked
+                mLogger.logGetMessage((List<Task>) payload);
+                //noinspection unchecked
+                mStateChangeListener.onGet(TaskList.NOT_DONE_LIST, (List<Task>) payload);
                 break;
             case UPDATE_EVENT :
                 mLogger.logUpdateMessage((String)payload);
@@ -415,7 +427,7 @@ public class Database {
         void onAdd(Task task);
         void onUpdate(String taskId);
         void onDelete(Task task);
-        void onGet(List<Task> task);
+        void onGet(int type, List<Task> task);
     }
 
     /**
@@ -448,7 +460,7 @@ public class Database {
         }
 
         @Override
-        public void onGet(List<Task> task) {
+        public void onGet(int type, List<Task> task) {
 
         }
     }

@@ -24,15 +24,15 @@ public class TaskDoneFragment extends AbstractScrollableTaskFragment {
     }
 
     @Override
-    Database.OnDatabaseStateChangeListener initDatabaseRetrievalListener() {
-        return new Database.SimpleOnDatabaseStateChangeListener() {
-            @Override
-            public void onGet(List<Task> task) {
-                mTaskList.setTaskList(TaskList.DONE_LIST, task);
-                initAdaptor();
-            }
-        };
+    List<Task> getAdaptorTaskList() {
+        return mTaskList.getTaskList(TaskList.DONE_LIST);
     }
+
+    @Override
+    int getAdaptorType() {
+        return TaskAdaptor.DONE_ADAPTOR;
+    }
+
 
     @Override
     void registerInvokerCommands() {
@@ -42,19 +42,5 @@ public class TaskDoneFragment extends AbstractScrollableTaskFragment {
                         START_TASK_NOT_DONE_FRAGMENT_COMMAND);
     }
 
-    @Override
-    String getDatabaseCollectionPath() {
-        return Database.DONE_COLLECTION;
-    }
 
-    private void initAdaptor() {
-        mTaskAdaptor = new TaskAdaptor(
-                getActivity(),
-                mTaskList.getTaskList(TaskList.DONE_LIST),
-                TaskAdaptor.DONE_ADAPTOR);
-        mTaskRecyclerView.setAdapter(mTaskAdaptor);
-        mInvoker.execute("" + R.id.menu_sort_by_deadline_item);
-        Log.d(TAG, "Adaptor set for recycler view");
-        super.attachSwipeForActionCallback();
-    }
 }

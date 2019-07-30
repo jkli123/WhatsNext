@@ -25,19 +25,12 @@ import java.util.Calendar;
 import java.util.UUID;
 
 public class AdditionFragment extends AbstractStaticFragment {
+
     private static final String TAG = "AdditionFragment";
     private int mStatusIdx;
 
     static AdditionFragment newInstance() {
-        Bundle args = new Bundle();
-        AdditionFragment fragment = new AdditionFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        return new AdditionFragment();
     }
 
     @Nullable
@@ -115,18 +108,17 @@ public class AdditionFragment extends AbstractStaticFragment {
                     database.addTaskForUser(firebaseUser, task, Database.TASK_COLLECTION);
                 }
 
-
-                // Return to MainFragment
-                getActivity().getSupportFragmentManager()
-                        .popBackStack();
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container, TaskNotDoneFragment.newInstance(), "MainFragment")
-                        .addToBackStack(null)
-                        .commit();
+                // Return to previous fragment that started this fragment.
+                returnToPreviousFragment();
             }
         });
 
         return view;
     }
+
+    private void returnToPreviousFragment() {
+        getActivity().getSupportFragmentManager()
+                .popBackStack();
+    }
+
 }

@@ -19,11 +19,9 @@ import com.google.android.material.navigation.NavigationView;
 import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.debug.DebugFragment;
 
-//TODO sort the tasks when they come out of the database. no order when they are set for now.
-//TODO consider refactoring out TaskList's sort method, currently it sorts multiple lists and the name of the method does not convey the intention of code
-//TODO consider refactoring our sSortField and mTaskComparator variable out of this class. They make code hard to follow.
-//TODO as per the first TODO, refactoring the done list should get rid of the methods dealing with swapping of the lists.
-//TODO change status when swiping right activates the background view, handle clicks on the image views.
+//TODO detail fragment if you switch from not done task to done, the task remains in the list.
+//TODO same for from done to some other not done status
+//TODO FAB for addition of tasks
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -39,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     private static final boolean isDebugRun = false;
 
     private Auth auth;
-
     /**
      * Initialization of Main Activity by launching FragmentManager.
      *
@@ -70,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             if (!auth.isCurrentUserSignedIn()) {
                 runSignIn();
             } else {
-                runMainFragment();
+                runSplashFragment();
             }
         }
     }
@@ -82,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == SIGN_IN_INTENT) {
             if (resultCode == RESULT_OK) {
                 Log.d(TAG, "SIGN IN OK");
-                runMainFragment();
+                runSplashFragment();
             } else if (resultCode == RESULT_CANCELED) {
                 Log.d(TAG, "SIGN IN NOT OK");
             }
@@ -132,11 +129,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void runMainFragment() {
+    private void runSplashFragment() {
         FragmentManager fm = getSupportFragmentManager();
-        Fragment mainFragment = TaskNotDoneFragment.newInstance();
+        Fragment splashFragment = SplashFragment.newInstance();
         fm.beginTransaction()
-                .replace(R.id.fragment_container, mainFragment)
+                .replace(R.id.fragment_container, splashFragment)
                 .commit();
     }
 
