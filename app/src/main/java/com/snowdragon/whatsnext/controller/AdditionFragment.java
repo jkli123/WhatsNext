@@ -1,19 +1,24 @@
 package com.snowdragon.whatsnext.controller;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.snowdragon.whatsnext.database.Auth;
@@ -27,7 +32,7 @@ import java.util.UUID;
 public class AdditionFragment extends AbstractStaticFragment {
 
     private static final String TAG = "AdditionFragment";
-    private int mStatusIdx;
+    private int mStatusIdx = Task.NOT_DONE;
 
     static AdditionFragment newInstance() {
         return new AdditionFragment();
@@ -43,20 +48,41 @@ public class AdditionFragment extends AbstractStaticFragment {
         final EditText taskName = view.findViewById(R.id.addition_name_edittext);
         final EditText taskCategory = view.findViewById(R.id.addition_category_edittext);
         final EditText taskDescription = view.findViewById(R.id.addition_description_edittext);
-        final Button taskStatus = view.findViewById(R.id.addition_status_button);
+        final Spinner taskStatus = view.findViewById(R.id.addition_status_spinner);
         final TextView taskDeadline = view.findViewById(R.id.addition_deadline_textview);
+        Button cancelButton = view.findViewById(R.id.addition_cancel_button);
         Button addTask = view.findViewById(R.id.addition_add_button);
 
-        // Initializing default value on taskStatus Button
-        mStatusIdx = Task.NOT_DONE;
-        taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
+//        // Initializing default value on taskStatus Button
+//        mStatusIdx = Task.NOT_DONE;
+//        taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
+//
+//        // Allowing status to be changed on click. Status cycles through the four default statuses
+//        taskStatus.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mStatusIdx = Task.toggleStatus(mStatusIdx);
+//                taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
+//            }
+//        });
 
-        // Allowing status to be changed on click. Status cycles through the four default statuses
-        taskStatus.setOnClickListener(new View.OnClickListener() {
+        // Initializing ArrayAdaptor for taskStatus Spinner items
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(),
+                R.layout.spinner_item,
+                Task.sStatusList);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        taskStatus.setAdapter(arrayAdapter);
+        taskStatus.setSelection(Task.NOT_DONE);
+        taskStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                mStatusIdx = Task.toggleStatus(mStatusIdx);
-                taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String status = (String) parent.getItemAtPosition(position);
+                mStatusIdx = Task.getStatusIndexFromString(status);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
@@ -88,7 +114,16 @@ public class AdditionFragment extends AbstractStaticFragment {
         final Database database = Database.getInstance(getActivity());
         final FirebaseUser firebaseUser = Auth.getInstance().getCurrentUser();
 
-        // "Add Task" button performs an addition of Task to sTasks in TaskList
+        // "Cancel" button returns user to the MainFragment when clicked on
+        // Does not have very practical purpose apart from providing a symmetrical design
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                returnToPreviousFragment();
+            }
+        });
+
+        // "Add" button performs an addition of Task to sTasks in TaskList
         // and returns to the MainFragment when clicked on
         addTask.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +133,7 @@ public class AdditionFragment extends AbstractStaticFragment {
                 task.setCategory(taskCategory.getText().toString());
                 task.setDescription(taskDescription.getText().toString());
                 task.setDeadline(taskDeadlineValue.getTime());
-                task.setStatus(Task.getStatusIndexFromString(taskStatus.getText().toString()));
+                task.setStatus(mStatusIdx);
                 task.setId(UUID.randomUUID().toString());
 
                 TaskList.get().addTask(task.getStatus() == Task.DONE ? TaskList.DONE_LIST: TaskList.NOT_DONE_LIST, task);
@@ -113,12 +148,41 @@ public class AdditionFragment extends AbstractStaticFragment {
             }
         });
 
+
+        View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (!hasFocus && view instanceof EditText ) {
+                    Log.d(TAG, "Focus FROM " + view.getId());
+                    hideKeyboard(view);
+                } else {
+                    Log.d(TAG, "Focus TO " + view.getId());
+
+                }
+            }
+        };
+
+        taskName.setOnFocusChangeListener(focusChangeListener);
+        taskCategory.setOnFocusChangeListener(focusChangeListener);
+        taskDescription.setOnFocusChangeListener(focusChangeListener);
+        taskStatus.setOnFocusChangeListener(focusChangeListener);
+        taskDeadline.setOnFocusChangeListener(focusChangeListener);
+
         return view;
     }
 
     private void returnToPreviousFragment() {
         getActivity().getSupportFragmentManager()
                 .popBackStack();
+    }
+
+
+
+    private void hideKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
     }
 
 }

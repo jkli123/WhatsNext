@@ -49,21 +49,24 @@
         android:hint="@string/detail_description_edittext_message"
         android:inputType="textMultiLine"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintBottom_toTopOf="@+id/detail_horizontal_divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/detail_category_edittext"
         tools:text="Description" />
 
-    <Button
-        android:id="@+id/detail_status_button"
-        android:layout_width="140dp"
-        android:layout_height="0dp"
+    <Spinner
+        android:id="@+id/detail_status_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/detail_status_button_message"
-        android:textSize="16sp"
+        android:layout_marginBottom="8dp"
+        android:padding="16dp"
+        android:dropDownWidth="wrap_content"
+        android:dropDownVerticalOffset="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/detail_category_edittext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/detail_name_edittext"
         app:layout_constraintTop_toTopOf="parent" />
@@ -76,17 +79,31 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="16dp"
-        android:gravity="center"
+        android:gravity="center|start"
         android:textColor="@android:color/black"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/detail_description_edittext"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/detail_category_edittext"
-        app:layout_constraintTop_toBottomOf="@id/detail_status_button" />
+        app:layout_constraintTop_toBottomOf="@id/detail_status_spinner"
+        tools:text="19/08/2019" />
+
+    <View
+        android:id="@+id/detail_horizontal_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/colorLightGray"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toTopOf="@id/detail_linear_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/detail_linear_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -98,24 +115,25 @@
 
         <Button
             android:id="@+id/detail_update_button"
-            android:layout_width="0dp"
-            android:background="@color/fui_transparent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="@string/detail_update_button_message"
-            android:textAllCaps="false"
-            android:textSize="24sp"
-            android:layout_marginBottom="?attr/actionBarSize"/>
+            style="@style/FragmentButtons"
+            />
+
+        <View
+            android:id="@+id/detail_vertical_divider"
+            android:layout_width="1dp"
+            android:layout_height="30dp"
+            android:background="@color/colorLightGray"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="?attr/actionBarSize"
+            />
 
         <Button
             android:id="@+id/detail_delete_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/fui_transparent"
             android:text="@string/detail_delete_button_message"
-            android:textAllCaps="false"
-            android:textSize="24sp"
-            android:layout_marginBottom="?attr/actionBarSize"/>
+            style="@style/FragmentButtons"
+            />
+
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -24,6 +24,8 @@ import com.snowdragon.whatsnext.debug.DebugFragment;
 //TODO change colour of the text to not be black in detail fragment's buttons
 //TODO change detail fragment status chooser to be a dropdown selector
 //TODO addition fragment button also nid change to be same as detail fragment's button
+//TODO Implement search and filter
+//TODO Add message for empty task list
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -118,9 +120,11 @@ public class MainActivity extends AppCompatActivity {
                                 .commit();
                         isSuccessful = true;
                         break;
+
                     case R.id.main_sign_out_menu:
                         if(auth.isCurrentUserSignedIn()) {
                             auth.signOutCurrentUser();
+                            clearBackStack();
                             runSignIn();
                         }
                         isSuccessful = true;
@@ -169,5 +173,12 @@ public class MainActivity extends AppCompatActivity {
         }
         Intent signInIntent = Auth.getAuthSignInIntent(Auth.EMAIL_PROVIDER, Auth.GOOGLE_PROVIDER);
         startActivityForResult(signInIntent, SIGN_IN_INTENT);
+    }
+
+    private void clearBackStack() {
+        FragmentManager fm = getSupportFragmentManager();
+        for(int i = 0; i < fm.getBackStackEntryCount(); i++) {
+            fm.popBackStack();
+        }
     }
 }

@@ -6,11 +6,11 @@
     <string name="database_delete_message">Task with id: %1$s, deleted from database successfully</string>
     <string name="database_get_message">Retrieval of all tasks from database completed successfully: List: %1$s</string>
     <string name="database_general_message">%1$s</string>
-    <string name="addition_deadline_message">Complete by </string>
+    <string name="addition_deadline_prompt_message">Complete by </string>
     <string name="addition_status_button_message">"Completed"</string>
-    <string name="addition_add_button_message">"Add Task"</string>
+    <string name="addition_add_button_message">"Add"</string>
     <string name="menu_new_task_item_title">New task</string>
-    <string name="detail_status_button_message">IN PROGRESS</string>
+    <string name="detail_status_button_message">Status</string>
     <string name="detail_update_button_message">Update</string>
     <string name="detail_delete_button_message">Delete</string>
     <string name="detail_description_edittext_message">Add description</string>
@@ -34,4 +34,6 @@
     <string name="in_progress_short_form">In Prog</string>
     <string name="done">Done</string>
     <string name="on_hold">On Hold</string>
+    <string name="addition_cancel_button_message">Cancel</string>
+    <string name="addition_status_prompt_message">Status</string>
 </resources>

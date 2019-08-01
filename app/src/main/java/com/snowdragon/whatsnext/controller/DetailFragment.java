@@ -8,9 +8,12 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,7 +25,6 @@ import com.snowdragon.whatsnext.database.Database;
 import com.snowdragon.whatsnext.model.Task;
 import com.snowdragon.whatsnext.model.TaskChange;
 import com.snowdragon.whatsnext.model.TaskList;
-import com.snowdragon.whatsnext.patterns.Invoker;
 
 import java.util.Calendar;
 
@@ -61,10 +63,11 @@ public class DetailFragment extends AbstractStaticFragment {
         final EditText taskName = view.findViewById(R.id.detail_name_edittext);
         final EditText taskCategory = view.findViewById(R.id.detail_category_edittext);
         final EditText taskDescription = view.findViewById(R.id.detail_description_edittext);
-        final Button taskStatus = view.findViewById(R.id.detail_status_button);
         final TextView taskDeadline = view.findViewById(R.id.detail_deadline_textview);
+        final Spinner taskStatus = view.findViewById(R.id.detail_status_spinner);
         mUpdateButton = view.findViewById(R.id.detail_update_button);
         final Button deleteButton = view.findViewById(R.id.detail_delete_button);
+
 
         // Retrieving Task fields content for display
         mTask = (Task) getArguments().getSerializable(KEY);
@@ -74,7 +77,6 @@ public class DetailFragment extends AbstractStaticFragment {
         taskCategory.setText(mTask.getCategory());
         taskDescription.setText(mTask.getDescription());
         taskDeadline.setText(DateFormat.format("dd/MM/yyyy",mTask.getDeadline()));
-        taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
 
         // Assigning taskDeadline TextView to open a DatePickerDialog to select date when clicked on
         mTaskDeadlineValue.setTime(mTask.getDeadline());
@@ -99,13 +101,37 @@ public class DetailFragment extends AbstractStaticFragment {
             }
         });
 
-        // Allowing status to be changed on click. Status cycles through the four default statuses
-        taskStatus.setOnClickListener(new View.OnClickListener() {
+        // taskStatus toggle Button has now been replaced with taskStatus Spinner
+        // Initializing ArrayAdaptor for taskStatus Spinner items
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(),
+                R.layout.spinner_item,
+                Task.sStatusList);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        taskStatus.setAdapter(arrayAdapter);
+
+        // Set current view on the Spinner to be mTask's current status
+        taskStatus.setSelection(mTask.getStatus());
+
+        // Implementing OnItemSelectedListener for the Spinner
+        // Note: OnItemClickedListener is not meant for Spinners and an error will be thrown if used
+        taskStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String status = (String) parent.getItemAtPosition(position);
+                mStatusIdx = Task.getStatusIndexFromString(status);
+
+                // Enable updateButton on first change made to Status
+                if (mStatusIdx != mTask.getStatus()) {
+                    mUpdateButton.setEnabled(true);
+                }
+
+                // Update Status regardless
+                mTaskChangeBuilder.updateStatus(mStatusIdx);
+            }
 
             @Override
-            public void onClick(View v) {
-                mStatusIdx = Task.toggleStatus(mStatusIdx);
-                taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
@@ -118,8 +144,6 @@ public class DetailFragment extends AbstractStaticFragment {
                 new ViewTextWatcher(Task.DESCRIPTION));
         taskDeadline.addTextChangedListener(
                 new ViewTextWatcher(Task.DEADLINE));
-        taskStatus.addTextChangedListener(
-                new ViewTextWatcher(Task.STATUS));
 
         // Adding the ClickListener to the "Update" Button
         mUpdateButton.setOnClickListener(new View.OnClickListener() {
@@ -199,10 +223,6 @@ public class DetailFragment extends AbstractStaticFragment {
 
                 case Task.DESCRIPTION:
                     mTaskChangeBuilder.updateDescription(updatedValue);
-                    break;
-
-                case Task.STATUS:
-                    mTaskChangeBuilder.updateStatus(Task.getStatusIndexFromString(updatedValue));
                     break;
 
                 case Task.DEADLINE:

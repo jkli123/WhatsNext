@@ -1,7 +1,5 @@
 package com.snowdragon.whatsnext.model;
 
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
@@ -28,11 +26,11 @@ public class Task implements Serializable {
 
     public static final String WORK_CATEGORY = "WORK";
     public static final String STUDY_CATEGORY = "STUDY";
-    public static final int DONE = 0;
+    public static final int NOT_DONE = 0;
     public static final int IN_PROGRESS = 1;
     public static final int ON_HOLD = 2;
-    public static final int NOT_DONE = 3;
-    public static List<String> sStatusList = Arrays.asList("DONE", "IN PROGRESS", "ON HOLD", "NOT DONE");
+    public static final int DONE = 3;
+    public static List<String> sStatusList = Arrays.asList("Not Done", "In Progress", "On Hold", "Done");
 
     private String mName;
     private String mCategory;
