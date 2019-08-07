@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -18,10 +19,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseUser;
-import com.snowdragon.whatsnext.database.Auth;
-import com.snowdragon.whatsnext.database.Database;
 import com.snowdragon.whatsnext.model.Task;
 import com.snowdragon.whatsnext.model.TaskComparatorFactory;
 import com.snowdragon.whatsnext.model.TaskList;
@@ -30,6 +29,7 @@ import com.snowdragon.whatsnext.patterns.Invoker;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class AbstractScrollableTaskFragment extends Fragment {
 
@@ -81,6 +81,47 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
         }
     };
 
+    final Command DELETE_MULTISELECT_ITEMS_COMMAND = new Command() {
+        @Override
+        public void execute() {
+            mTaskAdaptor.deleteMultiselectItems();
+            setMultiselectModeEnabled(false);
+        }
+    };
+
+    final Command SET_MULTISELECT_ITEMS_NOT_DONE_COMMAND = new Command() {
+        @Override
+        public void execute() {
+            mTaskAdaptor.updateMultiselectItemsStatus(Task.NOT_DONE);
+            setMultiselectModeEnabled(false);
+        }
+    };
+
+    final Command SET_MULTISELECT_ITEMS_IN_PROGRESS_COMMAND = new Command() {
+        @Override
+        public void execute() {
+            mTaskAdaptor.updateMultiselectItemsStatus(Task.IN_PROGRESS);
+            setMultiselectModeEnabled(false);
+        }
+    };
+
+    final Command SET_MULTISELECT_ITEMS_ON_HOLD_COMMAND = new Command() {
+        @Override
+        public void execute() {
+            mTaskAdaptor.updateMultiselectItemsStatus(Task.ON_HOLD);
+            setMultiselectModeEnabled(false);
+        }
+    };
+
+
+    final Command SET_MULTISELECT_ITEMS_DONE_COMMAND = new Command() {
+        @Override
+        public void execute() {
+            mTaskAdaptor.updateMultiselectItemsStatus(Task.DONE);
+            setMultiselectModeEnabled(false);
+        }
+    };
+
     private static final String TAG = "AScrollableTaskFragment";
 
     Invoker mInvoker = new Invoker();
@@ -89,8 +130,12 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
     TaskList mTaskList = TaskList.get();
 
     private TaskComparatorFactory mComparatorFactory = new TaskComparatorFactory();
+    private ItemTouchHelper mHelper;
+    private Menu mMenu;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private MainActivity mActivity;
 
-    abstract void setVisibleMenuOptions(Menu menu);
+    abstract void setFragmentSpecificMenuItemsVisible(Menu menu);
     abstract List<Task> getAdaptorTaskList();
     abstract int getAdaptorType();
     abstract void registerInvokerCommands();
@@ -105,8 +150,9 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+        mMenu = menu;
         inflater.inflate(R.menu.menu_main, menu);
-        setVisibleMenuOptions(menu);
+        displayMenuItemsForNormalMode();
     }
 
     @Override
@@ -121,9 +167,9 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.floating_add_button);
         floatingActionButton.show();
-
         initRecyclerView(view);
-
+        mActivity = (MainActivity) getActivity();
+        mDrawerToggle = mActivity.getActionBarDrawerToggle();
         return view;
     }
 
@@ -133,7 +179,40 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
         if(mTaskAdaptor != null) {
             mTaskAdaptor.notifyDataSetChanged();
             Log.d(TAG, "Adaptor notified of data set changed");
-            resumeRecyclerView();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mHelper != null) {
+            detachSwipeForActionCallback();
+        }
+    }
+
+    /*
+     * Adapts app appearances and widget behaviours based on whether multiselection mode is enabled.
+     */
+    void setMultiselectModeEnabled(boolean isEnabled) {
+        AppBarLayout layout = Objects.requireNonNull(getActivity()).findViewById(R.id.appbar_layout);
+        FloatingActionButton floatingActionButton = getActivity().findViewById(R.id.floating_add_button);
+
+        if (isEnabled) {
+            mTaskAdaptor.setMultiselectModeEnabled(true);
+            detachSwipeForActionCallback();
+            displayMenuItemsForMultiselectMode();
+            configureDrawerForMultiselectMode();
+            floatingActionButton.hide();
+            mActivity.setIsToolbarHiddenOnScroll(false);
+            layout.setExpanded(true, true);
+
+        } else {
+            mTaskAdaptor.setMultiselectModeEnabled(false);
+            attachSwipeForActionCallback();
+            displayMenuItemsForNormalMode();
+            configureDrawerForNormalMode();
+            floatingActionButton.show();
+            mActivity.setIsToolbarHiddenOnScroll(true);
         }
     }
 
@@ -143,21 +222,34 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
         mInvoker.register("" + R.id.menu_sort_by_name_item, SORT_BY_NAME_COMMAND);
         mInvoker.register("" + R.id.menu_sort_by_deadline_item, SORT_BY_DEADLINE_COMMAND);
         mInvoker.register("" + R.id.menu_sort_by_status_item, SORT_BY_STATUS_COMMAND);
+        mInvoker.register("" + R.id.menu_mutltiselect_delete, DELETE_MULTISELECT_ITEMS_COMMAND);
+        mInvoker.register("" + R.id.menu_set_not_done, SET_MULTISELECT_ITEMS_NOT_DONE_COMMAND);
+        mInvoker.register("" + R.id.menu_set_in_progress, SET_MULTISELECT_ITEMS_IN_PROGRESS_COMMAND);
+        mInvoker.register("" + R.id.menu_set_on_hold, SET_MULTISELECT_ITEMS_ON_HOLD_COMMAND);
+        mInvoker.register("" + R.id.menu_set_done, SET_MULTISELECT_ITEMS_DONE_COMMAND);
     }
 
-    void attachSwipeForActionCallback() {
+    private void attachSwipeForActionCallback() {
+        Log.d(TAG, "Task Holder swipe feature attached");
         if(mTaskAdaptor == null) {
             throw new IllegalStateException("Adaptor has not been set. Callback attachment not allowed");
         }
-        ItemTouchHelper helper = new ItemTouchHelper(new SwipeForActionCallback(
+        mHelper = new ItemTouchHelper(new SwipeForActionCallback(
                 0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT,
                 mTaskAdaptor
         ));
-        helper.attachToRecyclerView(mTaskRecyclerView);
+        mHelper.attachToRecyclerView(mTaskRecyclerView);
+    }
+
+    private void detachSwipeForActionCallback() {
+        Log.d(TAG, "Task Holder swipe feature detached");
+        mHelper.attachToRecyclerView(null);
+        mHelper = null;
     }
 
     private void initRecyclerView(View layout) {
+        Log.d(TAG, "Initiating Recycler View");
         mTaskRecyclerView = layout.findViewById(R.id.task_recycler_view);
         mTaskRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         DividerItemDecoration dividerItemDecoration
@@ -167,11 +259,13 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
                 getActivity(),
                 getAdaptorTaskList(),
                 getAdaptorType());
+        mTaskAdaptor.setItemOnLongClickListener(new TaskAdaptor.ItemOnLongClickListener() {
+            @Override
+            public void onLongClick() {
+                setMultiselectModeEnabled(true);
+            }
+        });
         mTaskRecyclerView.setAdapter(mTaskAdaptor);
-        attachSwipeForActionCallback();
-    }
-
-    private void resumeRecyclerView() {
         attachSwipeForActionCallback();
     }
 
@@ -201,5 +295,48 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
         } else {
             transaction.commit();
         }
+    }
+
+    private void configureDrawerForMultiselectMode() {
+        mDrawerToggle.setDrawerIndicatorEnabled(false);
+        mDrawerToggle.setToolbarNavigationClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setMultiselectModeEnabled(false);
+                    }
+                }
+        );
+    }
+
+    private void configureDrawerForNormalMode() {
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerToggle.setToolbarNavigationClickListener(
+                mActivity.getOriginalDrawerClickListener());
+    }
+
+    private void displayMenuItemsForMultiselectMode() {
+        setAllMenuItemsVisible(false);
+        setMultiselectMenuItemsVisible(true);
+    }
+
+    private void displayMenuItemsForNormalMode() {
+        setAllMenuItemsVisible(true);
+        setMultiselectMenuItemsVisible(false);
+        setFragmentSpecificMenuItemsVisible(mMenu);
+    }
+
+    private void setAllMenuItemsVisible(boolean isVisible) {
+        for (int i = 0; i < mMenu.size(); i++) {
+            mMenu .getItem(i).setVisible(isVisible);
+        }
+    }
+
+    private void setMultiselectMenuItemsVisible(boolean isVisible) {
+        mMenu.findItem(R.id.menu_mutltiselect_delete).setVisible(isVisible);
+        mMenu.findItem(R.id.menu_set_not_done).setVisible(isVisible);
+        mMenu.findItem(R.id.menu_set_in_progress).setVisible(isVisible);
+        mMenu.findItem(R.id.menu_set_on_hold).setVisible(isVisible);
+        mMenu.findItem(R.id.menu_set_done).setVisible(isVisible);
     }
 }

@@ -1,11 +1,7 @@
 package com.snowdragon.whatsnext.controller;
 
-import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 
-
-import com.snowdragon.whatsnext.database.Database;
 import com.snowdragon.whatsnext.model.Task;
 import com.snowdragon.whatsnext.model.TaskList;
 
@@ -21,7 +17,7 @@ class TaskNotDoneFragment extends AbstractScrollableTaskFragment {
     }
 
     @Override
-    void setVisibleMenuOptions(Menu menu) {
+    void setFragmentSpecificMenuItemsVisible(Menu menu) {
         menu.findItem(R.id.menu_show_tasks_not_done).setVisible(false);
         menu.findItem(R.id.menu_show_tasks_done).setVisible(true);
     }

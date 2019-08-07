@@ -80,6 +80,22 @@
         android:id="@+id/foreground_task_block"
         android:background="@color/colorItemListForeground">
 
+        <CheckBox
+            android:id="@+id/task_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/checkbox_guideline"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/checkbox_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.0" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/foreground_90_guideline"
             android:layout_width="wrap_content"
@@ -89,7 +105,7 @@
 
         <TextView
             android:id="@+id/task_name_textview"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:textSize="36sp"
@@ -97,7 +113,7 @@
             android:textColor="@android:color/black"
             android:ellipsize="end"
             android:maxLines="2"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/checkbox_guideline"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/foreground_90_guideline"
             app:layout_constraintBottom_toBottomOf="@id/task_deadline_textview"
@@ -111,7 +127,7 @@
             android:layout_margin="16dp"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/checkbox_guideline"
             app:layout_constraintTop_toBottomOf="@id/task_name_textview"
             app:layout_constraintEnd_toStartOf="@id/foreground_90_guideline"
             app:layout_constraintHorizontal_bias="0"

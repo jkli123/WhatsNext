@@ -34,4 +34,30 @@
         android:icon="@drawable/ic_directions_run_white_24dp"
         android:title="@string/unfinished_tasks"
         app:showAsAction="collapseActionView" />
+
+
+
+    <item android:id="@+id/menu_mutltiselect_delete"
+        android:icon="@drawable/ic_delete_white_24dp"
+        android:title="@string/contextual_action_bar_delete"
+        app:showAsAction="always" />
+
+
+        <item
+            android:id="@+id/menu_set_not_done"
+            android:title="@string/not_done_long_form"
+            app:showAsAction="collapseActionView" />
+        <item
+            android:id="@+id/menu_set_in_progress"
+            android:title="@string/in_progress_long_form"
+            app:showAsAction="collapseActionView" />
+        <item
+            android:id="@+id/menu_set_on_hold"
+            android:title="@string/on_hold_long_form"
+            app:showAsAction="collapseActionView" />
+        <item
+            android:id="@+id/menu_set_done"
+            android:title="@string/done_long_form"
+            app:showAsAction="collapseActionView" />
+
 </menu>

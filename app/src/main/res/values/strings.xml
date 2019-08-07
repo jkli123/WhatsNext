@@ -36,4 +36,11 @@
     <string name="on_hold">On Hold</string>
     <string name="addition_cancel_button_message">Cancel</string>
     <string name="addition_status_prompt_message">Status</string>
+    <string name="contextual_action_bar_delete">delete</string>
+    <string name="back">Back</string>
+    <string name="done_long_form">Done</string>
+    <string name="mark_multiple_items_as">Mark as</string>
+    <string name="not_done_long_form">Not done</string>
+    <string name="in_progress_long_form">In progress</string>
+    <string name="on_hold_long_form">On hold</string>
 </resources>

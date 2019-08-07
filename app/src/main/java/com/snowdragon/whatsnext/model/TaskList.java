@@ -1,15 +1,9 @@
 package com.snowdragon.whatsnext.model;
 
-import android.content.pm.PackageManager;
-
-import java.security.acl.NotOwnerException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
-import java.util.UUID;
 
 public class TaskList {
 

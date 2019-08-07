@@ -138,4 +138,9 @@ public class Task implements Serializable {
                 ", Deadline: " + mDeadline +
                 ", UUID: " + mId + "]";
     }
+
+    @Override
+    public int hashCode() {
+        return UUID.fromString(mId).hashCode();
+    }
 }

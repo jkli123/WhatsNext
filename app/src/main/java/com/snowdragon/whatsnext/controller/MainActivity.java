@@ -16,16 +16,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.snowdragon.whatsnext.database.Auth;
 import com.snowdragon.whatsnext.debug.DebugFragment;
 
-//TODO faded line above buttons in detail fragment to distinguish between teh buttons and edit text
-//TODO change colour of the text to not be black in detail fragment's buttons
-//TODO change detail fragment status chooser to be a dropdown selector
-//TODO addition fragment button also nid change to be same as detail fragment's button
 //TODO Implement search and filter
-//TODO Add message for empty task list
+//TODO TaskViewHolder animation on long click
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -41,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
     private static final boolean isDebugRun = false;
 
     private Auth auth;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private Toolbar mToolbar;
+    private View.OnClickListener mOriginalDrawerClickListener;
+    private AppBarLayout.LayoutParams mLayoutParams;
+
     /**
      * Initialization of Main Activity by launching FragmentManager.
      *
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         initAppBar();
         initFab();
+        initCoordLayoutParams();
         auth = Auth.getInstance();
 
         if(isDebugRun) {
@@ -77,6 +80,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * For running of sign-in flow
+     *
+     * <p>
+     *     When runSignIn() is called, startActivityForResult will be required
+     *     to initiate the sign-in process
+     * </p>
+     *
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -92,18 +104,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initAppBar() {
-        Toolbar toolbar = findViewById(R.id.toolbar_main);
-        setSupportActionBar(toolbar);
+        // Add the toolbar
+        mToolbar = findViewById(R.id.toolbar_main);
+        setSupportActionBar(mToolbar);
+
+        // Initialize drawer
         final DrawerLayout drawer = findViewById(R.id.main_drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 drawer,
-                toolbar,
+                mToolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_closer);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        toggle.syncState();
+        mDrawerToggle.syncState();
+
+        // Initialize the cross that appears when in Multiselect mode
+        mDrawerToggle.setHomeAsUpIndicator(getResources()
+                .getDrawable(R.drawable.ic_close_white_24dp));
+
+        // Storing original ClickListener for opening drawer
+        if (mOriginalDrawerClickListener == null) {
+            mOriginalDrawerClickListener = mDrawerToggle.getToolbarNavigationClickListener();
+        }
+        mDrawerToggle.setToolbarNavigationClickListener(mOriginalDrawerClickListener);
+
+        // Initialize drawer contents in Nav view
         NavigationView navigationView = findViewById(R.id.main_nav_view);
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -145,6 +172,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initCoordLayoutParams() {
+        mLayoutParams = (AppBarLayout.LayoutParams) mToolbar.getLayoutParams();
+    }
+
     private void runAdditionFragment() {
         FragmentManager fm = getSupportFragmentManager();
         Fragment additionFragment = AdditionFragment.newInstance();
@@ -179,6 +210,23 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         for(int i = 0; i < fm.getBackStackEntryCount(); i++) {
             fm.popBackStack();
+        }
+    }
+    ActionBarDrawerToggle getActionBarDrawerToggle() {
+        return mDrawerToggle;
+    }
+
+    View.OnClickListener getOriginalDrawerClickListener() {
+        return mOriginalDrawerClickListener;
+    }
+
+    void setIsToolbarHiddenOnScroll(boolean enabled) {
+        if (enabled) {
+            mLayoutParams.setScrollFlags(
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS |
+                            AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
+        } else {
+            mLayoutParams.setScrollFlags(0);
         }
     }
 }

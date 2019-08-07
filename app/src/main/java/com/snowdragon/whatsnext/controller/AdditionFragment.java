@@ -1,14 +1,11 @@
 package com.snowdragon.whatsnext.controller;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -52,19 +49,6 @@ public class AdditionFragment extends AbstractStaticFragment {
         final TextView taskDeadline = view.findViewById(R.id.addition_deadline_textview);
         Button cancelButton = view.findViewById(R.id.addition_cancel_button);
         Button addTask = view.findViewById(R.id.addition_add_button);
-
-//        // Initializing default value on taskStatus Button
-//        mStatusIdx = Task.NOT_DONE;
-//        taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
-//
-//        // Allowing status to be changed on click. Status cycles through the four default statuses
-//        taskStatus.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mStatusIdx = Task.toggleStatus(mStatusIdx);
-//                taskStatus.setText(Task.getStatusStringFromIndex(mStatusIdx));
-//            }
-//        });
 
         // Initializing ArrayAdaptor for taskStatus Spinner items
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(),
@@ -149,24 +133,7 @@ public class AdditionFragment extends AbstractStaticFragment {
         });
 
 
-        View.OnFocusChangeListener focusChangeListener = new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (!hasFocus && view instanceof EditText ) {
-                    Log.d(TAG, "Focus FROM " + view.getId());
-                    hideKeyboard(view);
-                } else {
-                    Log.d(TAG, "Focus TO " + view.getId());
 
-                }
-            }
-        };
-
-        taskName.setOnFocusChangeListener(focusChangeListener);
-        taskCategory.setOnFocusChangeListener(focusChangeListener);
-        taskDescription.setOnFocusChangeListener(focusChangeListener);
-        taskStatus.setOnFocusChangeListener(focusChangeListener);
-        taskDeadline.setOnFocusChangeListener(focusChangeListener);
 
         return view;
     }
@@ -176,13 +143,5 @@ public class AdditionFragment extends AbstractStaticFragment {
                 .popBackStack();
     }
 
-
-
-    private void hideKeyboard(View view) {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
-                Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-
-    }
 
 }
