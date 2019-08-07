@@ -137,6 +137,7 @@ public class TaskAdaptor extends RecyclerView.Adapter<TaskAdaptor.TaskViewHolder
         mRecentlyUpdatedItemNewStatus = status;
         Iterator<Task> taskIterator = mMultiselectItems.iterator();
         while (taskIterator.hasNext()) {
+            mRecentlyUpdatedItem = taskIterator.next();
             mRecentlyUpdatedItemOldStatus = mRecentlyUpdatedItem.getStatus();
             TaskList.get().updateTask(mRecentlyUpdatedItem.getId(), mCurrentTaskChange);
             mInvoker.execute(UPDATE_STATUS_FOR_DATABASE);
