@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="item_list_height">175dp</dimen>
+    <dimen name="item_list_height">160dp</dimen>
     <dimen name="item_list_background_icon_height">60dp</dimen>
     <dimen name="item_list_background_icon_width">60dp</dimen>
-    <dimen name="item_list_foreground_icon_height">30dp</dimen>
-    <dimen name="item_list_foreground_icon_width">30dp</dimen>
+    <dimen name="item_list_foreground_icon_height">35dp</dimen>
+    <dimen name="item_list_foreground_icon_width">35dp</dimen>
+    <dimen name="text_size_small">8sp</dimen>
+    <dimen name="text_size_small_medium">12sp</dimen>
+    <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="text_size_medium_large">20sp</dimen>
+    <dimen name="text_size_large">24sp</dimen>
+    <dimen name="text_size_extra_large">28sp</dimen>
 </resources>

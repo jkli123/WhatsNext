@@ -185,9 +185,7 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (mHelper != null) {
-            detachSwipeForActionCallback();
-        }
+        detachSwipeForActionCallback();
     }
 
     /*
@@ -245,7 +243,6 @@ public abstract class AbstractScrollableTaskFragment extends Fragment {
     private void detachSwipeForActionCallback() {
         Log.d(TAG, "Task Holder swipe feature detached");
         mHelper.attachToRecyclerView(null);
-        mHelper = null;
     }
 
     private void initRecyclerView(View layout) {
